@@ -75,7 +75,7 @@ cd frontend && npm test          # 11 tests: validators + browser-sandbox driver
 cd frontend && npm run typecheck
 ```
 
-API collection: `docs/api-requests.http` · OpenAPI spec: `docs/openapi.json`.
+API collection: `docs/api-requests.http` · OpenAPI spec: `docs/openapi.json` · CI: `.github/workflows/ci.yml`.
 
 ## Phase 1 features
 
@@ -107,6 +107,6 @@ Database backups, rate limiting, secure refresh-token handling (httpOnly cookies
 ```
 backend/   FastAPI app (app/), Alembic migrations, pytest suite, Dockerfile
 frontend/  Next.js app (src/app), components, typed API layer (src/lib/api), vitest suite
-docs/      API collection, OpenAPI spec, optional CI workflow, logo
+docs/      API collection, OpenAPI spec, logo
 docker-compose.yml
 ```

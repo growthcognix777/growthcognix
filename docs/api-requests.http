@@ -1,0 +1,61 @@
+### GrowthCognix API smoke collection (VS Code REST Client / JetBrains HTTP client)
+@base = http://localhost:8000
+
+### Register an agency (returns access_token)
+POST {{base}}/api/v1/auth/register
+Content-Type: application/json
+
+{"agency_name": "Demo Agency", "full_name": "Your Name", "email": "you@youragency.com", "password": "ChangeMe123"}
+
+### Login
+# @name login
+POST {{base}}/api/v1/auth/login
+Content-Type: application/json
+
+{"email": "you@youragency.com", "password": "ChangeMe123"}
+
+###
+@token = {{login.response.body.access_token}}
+
+### Create a client
+# @name client
+POST {{base}}/api/v1/clients
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"company_name": "Example Industries", "website": "example.com", "industry": "Manufacturing", "target_markets": ["Karnataka"], "marketing_budget": 50000, "budget_currency": "INR"}
+
+### List clients
+GET {{base}}/api/v1/clients?q=example
+Authorization: Bearer {{token}}
+
+### Add a product
+POST {{base}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"client_id": "{{client.response.body.id}}", "name": "Product name", "kind": "product", "target_industries": ["Food processing"]}
+
+### Upload a document
+POST {{base}}/api/v1/documents
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=B
+
+--B
+Content-Disposition: form-data; name="client_id"
+
+{{client.response.body.id}}
+--B
+Content-Disposition: form-data; name="file"; filename="catalogue.pdf"
+Content-Type: application/pdf
+
+< ./catalogue.pdf
+--B--
+
+### Dashboard counts (live counts only)
+GET {{base}}/api/v1/dashboard/summary
+Authorization: Bearer {{token}}
+
+### Activity log
+GET {{base}}/api/v1/activity
+Authorization: Bearer {{token}}

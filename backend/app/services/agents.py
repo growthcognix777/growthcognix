@@ -1,4 +1,4 @@
-"""Registry of specialist agents. business_analyst runs from Phase 2 (Client Intelligence); the rest are planned."""
+"""Registry of specialist agents. business_analyst runs from Phase 2; website_auditor and competitor_analyst from Phase 3; the rest are planned."""
 AGENTS = [
     {"key": "business_analyst", "name": "Business Analyst", "phase": 2,
      "description": "Builds the client intelligence profile from client records, documents and website, with evidence."},

@@ -14,8 +14,8 @@ A multi-tenant AI business growth and marketing intelligence platform for digita
 | Phase | Module | Status |
 |---|---|---|
 | 1 | Foundation: auth, agency dashboard, clients, products, documents, agent centre, research jobs, activity log | ✅ Released |
-| 2 | Client Intelligence Engine (document extraction, business profiles, applications, personas, markets, evidence & review) | ✅ This release |
-| 3 | Website Audit & Competitor Intelligence (Firecrawl + OpenCrawl/Scrapy, PageSpeed) | Planned |
+| 2 | Client Intelligence Engine (document extraction, business profiles, applications, personas, markets, evidence & review) | ✅ Released |
+| 3 | Website Audit & Competitor Intelligence (native crawler or Firecrawl, PageSpeed, monitoring, opportunities) | ✅ This release |
 | 4 | Global Buyer Discovery & Lead Intelligence (India + export markets, 100-pt lead score) | Planned |
 | 5 | AI Marketing Strategy & Campaign Automation (human approval before publishing/spend) | Planned |
 | 6 | CRM, Sales & Outreach (pipeline, Gmail/Outlook, WhatsApp Business, quotations) | Planned |
@@ -115,6 +115,29 @@ API collection: `docs/api-requests.http` · OpenAPI spec: `docs/openapi.json` ·
 - Scanned PDFs without a text layer are marked `no_text` (no OCR yet); image OCR needs the Gemini key.
 - The website SSRF guard checks DNS before fetching but is not immune to DNS rebinding; block private egress at the network level in production.
 - Free-tier rate limits apply (Gemini/Groq per-minute and per-day caps); long catalogues are truncated to the model's context budget.
+
+## Phase 3: Website Audit & Competitor Intelligence
+
+- **Tables (migration `0003`):** websites, crawl_jobs, crawled_pages, website_audits, seo_findings, keyword_topics, competitors, competitor_snapshots, competitor_changes, opportunities. Opportunity evidence reuses Phase 2's `evidence_sources` (one evidence store, no duplicate ResearchSource table).
+- **Crawler (`app/services/web/`):** one interface, two adapters: `opencrawl_adapter.py` (built-in, free, default) and `firecrawl_adapter.py` (self-hosted Firecrawl or cloud via `FIRECRAWL_API_URL`/`FIRECRAWL_API_KEY`, `CRAWLER_PROVIDER=firecrawl`). Obeys robots.txt (Crawl-delay raises our delay; an inaccessible robots.txt means no crawl), sitemap seeding, max pages/depth, delay + concurrency rate limit, include/exclude globs, retries for timeouts/5xx, cancel, resume from the saved frontier, scheduled re-crawls.
+- **Security:** SSRF guard on every URL and every redirect hop (public DNS only, ports 80/443, no credentials), HTML/XML/text only, size and time caps, no logins/paywall/anti-bot bypassing, keys server-side only.
+- **Technical audit:** HTTPS, availability, viewport, titles/meta (missing, length, duplicates), H1/H2, canonical, noindex, robots.txt, sitemap, broken internal links, redirect chains, image alt, duplicate content, thin content, orphan pages, lang, schema.org (JSON-LD + microdata). Crawler-observed health score 0–100, explicitly not a ranking metric.
+- **PageSpeed Insights:** mobile + desktop Lighthouse scores and Core Web Vitals (lab, plus CrUX field data when Google has it), stored as *measured*; skipped, not faked, without `PAGESPEED_API_KEY`.
+- **SEO & content:** page scores, topic coverage from titles/headings (not search volume), product-page, industry, location and local-SEO recommendations, a suggested content calendar.
+- **Competitors:** manual entry (relevance by product/application/customer/geography required, domain validated, max 30 active), AI suggestions (Groq/Gemini) stored as *suggested* until accepted, crawling, snapshots of published products, prices (copied as published), certifications, locations, role-based business contacts, topics, optional AI positioning (labelled).
+- **Monitoring:** snapshot diff → page added/removed, title/description changes, homepage messaging, product added/removed, price changes, promotions, certifications, locations, contact changes, each with old value, new value, source URL and date. `scheduler` service queues due re-crawls hourly.
+- **Opportunities:** rule-based from the client audit vs competitor snapshots vs Phase 2 intelligence: content gaps, missing prices/certifications, differentiation, industry and location pages, underserved segments, conversion paths. Each has rationale, evidence, sources, priority, confidence, next action; reviewed by managers; never states competitor revenue, customers, traffic, market share or ad spend.
+- **UI:** client → Website & competitors with 12 screens: overview, crawl settings, pages, technical audit, performance, keywords & content, competitors, competitor profile, comparison, change history, opportunities, report (Markdown + CSV export).
+
+### Honest limitations (Phase 3)
+
+- Crawling needs the backend; the GitHub Pages preview can only store competitors.
+- No JavaScript rendering in the native crawler (single-page apps show little text); use the Firecrawl adapter for those.
+- Broken links are detected among crawled pages only; links beyond the page limit are not checked. External links are not checked.
+- Topic coverage is not keyword research: no search volumes or rankings until Search Console is connected (later phase).
+- PageSpeed needs a free Google API key and measures the home page only.
+- Location and certification detection uses pattern lists; unusual names may be missed.
+- Same DNS-rebinding caveat as Phase 2: block private egress at the network level in production.
 
 ## Before any public/VPS deployment
 

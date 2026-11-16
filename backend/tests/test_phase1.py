@@ -97,7 +97,9 @@ def test_jobs_agents_dashboard_no_fake_data(api):
     h = register(api)
     agents = api.get("/api/v1/agents", headers=h).json()
     assert len(agents) == 8 and all(a["total_jobs"] == 0 for a in agents)
-    assert all(a["status"] == "planned" for a in agents if a["key"] != "business_analyst")
+    live = {"business_analyst", "website_auditor", "competitor_analyst"}  # Phase 2 and 3 agents run
+    assert all(a["status"] == "planned" for a in agents if a["key"] not in live)
+    assert all(a["status"] == "active" for a in agents if a["key"] in ("website_auditor", "competitor_analyst"))
     assert next(a for a in agents if a["key"] == "business_analyst")["status"] == "needs_setup"  # no AI key in tests
     assert api.post("/api/v1/jobs", headers=h, json={"job_type": "market_research"}).status_code == 409
     s = api.get("/api/v1/dashboard/summary", headers=h).json()

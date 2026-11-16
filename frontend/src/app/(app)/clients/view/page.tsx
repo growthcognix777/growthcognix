@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { DocumentTable, Uploader } from "@/components/Documents";
 import { ClientIntelligence } from "@/components/Intelligence";
+import { WebIntel } from "@/components/WebIntel";
 import { AddProductButton, ProductCards, ProductModal } from "@/components/Products";
 import { Badge, Button, ButtonLink, Card, CardHeader, ErrorBox, Skeleton, Spinner, cx } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -13,7 +14,7 @@ import { fmtDate, fmtMoney, timeAgo } from "@/lib/format";
 import type { Product } from "@/lib/types";
 import { useAsync } from "@/lib/useAsync";
 
-const TABS = ["Overview", "Products & services", "Documents", "Intelligence", "Activity"] as const;
+const TABS = ["Overview", "Products & services", "Documents", "Intelligence", "Website & competitors", "Activity"] as const;
 
 function Detail() {
   const id = useSearchParams().get("id") || ""; const router = useRouter(); const { session } = useAuth();
@@ -97,6 +98,8 @@ function Detail() {
       {tab === "Intelligence" && (products.loading ? <Skeleton /> :
         <ClientIntelligence clientId={c.id} clientName={c.company_name} archived={!!c.archived_at} products={products.data?.items || []} />
       )}
+
+      {tab === "Website & competitors" && <WebIntel clientId={c.id} clientName={c.company_name} clientWebsite={c.website || null} archived={!!c.archived_at} />}
 
       {tab === "Activity" && (
         <Card><CardHeader title="Client activity" />

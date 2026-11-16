@@ -108,4 +108,44 @@ export const httpDriver: DataDriver = {
     if (!res.ok) throw new ApiError(res.status, "Could not build the report");
     return res.text();
   },
+
+  crawlerStatus: () => request("/api/v1/crawler/status"),
+  getClientWebsite: (cid) => request(`/api/v1/clients/${cid}/website`),
+  saveClientWebsite: (cid, b) => request(`/api/v1/clients/${cid}/website`, { method: "PUT", body: json(b) }),
+  startAudit: (cid, config) => request(`/api/v1/clients/${cid}/website-audits`, { method: "POST", body: json({ crawl_config: config || null }) }),
+  listCrawls: (cid, kind) => request(`/api/v1/clients/${cid}/crawls${qs({ kind })}`),
+  getCrawl: (id) => request(`/api/v1/crawls/${id}`),
+  cancelCrawl: (id) => request(`/api/v1/crawls/${id}/cancel`, { method: "POST" }),
+  retryCrawl: (id) => request(`/api/v1/crawls/${id}/retry`, { method: "POST" }),
+  listCrawlPages: (id, q) => request(`/api/v1/crawls/${id}/pages${qs(q)}`),
+  getCrawledPage: (id) => request(`/api/v1/crawled-pages/${id}`),
+  listAudits: (cid) => request(`/api/v1/clients/${cid}/website-audits`),
+  auditFindings: (id, q) => request(`/api/v1/website-audits/${id}/findings${qs(q)}`),
+  auditTopics: (id) => request(`/api/v1/website-audits/${id}/topics`),
+  auditReport: (id) => text(`/api/v1/website-audits/${id}/report.md`),
+  auditCsv: (id) => text(`/api/v1/website-audits/${id}/findings.csv`),
+
+  listCompetitors: (cid, status) => request(`/api/v1/clients/${cid}/competitors${qs({ status })}`),
+  addCompetitor: (cid, b) => request(`/api/v1/clients/${cid}/competitors`, { method: "POST", body: json(b) }),
+  editCompetitor: (id, b) => request(`/api/v1/competitors/${id}`, { method: "PATCH", body: json(b) }),
+  deleteCompetitor: (id) => request(`/api/v1/competitors/${id}`, { method: "DELETE" }),
+  reviewCompetitor: (id, action) => request(`/api/v1/competitors/${id}/review`, { method: "POST", body: json({ action }) }),
+  suggestCompetitors: (cid) => request(`/api/v1/clients/${cid}/competitors/suggest`, { method: "POST" }),
+  analyseCompetitor: (id) => request(`/api/v1/competitors/${id}/analyse`, { method: "POST", body: json({}) }),
+  competitorProfile: (id) => request(`/api/v1/competitors/${id}`),
+  competitorChanges: (id) => request(`/api/v1/competitors/${id}/changes`),
+  clientCompetitorChanges: (cid) => request(`/api/v1/clients/${cid}/competitor-changes`),
+  comparison: (cid) => request(`/api/v1/clients/${cid}/competitors/comparison`),
+
+  analyseOpportunities: (cid) => request(`/api/v1/clients/${cid}/opportunities/analyse`, { method: "POST" }),
+  listOpportunities: (cid, q) => request(`/api/v1/clients/${cid}/opportunities${qs(q)}`),
+  reviewOpportunity: (id, action, note) => request(`/api/v1/opportunities/${id}/review`, { method: "POST", body: json({ action, note: note || null }) }),
+  editOpportunity: (id, b) => request(`/api/v1/opportunities/${id}`, { method: "PATCH", body: json(b) }),
+  deleteOpportunity: (id) => request(`/api/v1/opportunities/${id}`, { method: "DELETE" }),
 };
+
+async function text(path: string): Promise<string> {
+  const res = await fetch(`${BASE}${path}`, { headers: { Authorization: `Bearer ${tokenStore.get()}` } });
+  if (!res.ok) throw new ApiError(res.status, "Download failed");
+  return res.text();
+}

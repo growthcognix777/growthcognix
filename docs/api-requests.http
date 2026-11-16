@@ -109,3 +109,79 @@ Content-Type: application/json
 ### Extract a document's text
 POST {{base}}/api/v1/documents/{{document_id}}/extract
 Authorization: Bearer {{token}}
+
+### ---------------- Phase 3: Website audit & competitors
+### Crawler status
+GET {{base}}/api/v1/crawler/status
+Authorization: Bearer {{token}}
+
+### Save crawl settings for the client's site
+PUT {{base}}/api/v1/clients/{{client_id}}/website
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"crawl_config": {"max_pages": 50, "max_depth": 3, "delay_seconds": 1, "exclude": ["/blog/*"]}, "crawl_interval_days": 30}
+
+### Start a website audit (crawl + technical audit + SEO + PageSpeed if configured)
+POST {{base}}/api/v1/clients/{{client_id}}/website-audits
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Crawl status / pages / retry
+GET {{base}}/api/v1/crawls/{{crawl_id}}
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/api/v1/crawls/{{crawl_id}}/pages?status=failed
+Authorization: Bearer {{token}}
+
+###
+POST {{base}}/api/v1/crawls/{{crawl_id}}/retry
+Authorization: Bearer {{token}}
+
+### Audit findings and report
+GET {{base}}/api/v1/website-audits/{{audit_id}}/findings?severity=high
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/api/v1/website-audits/{{audit_id}}/report.md
+Authorization: Bearer {{token}}
+
+### Add a competitor
+POST {{base}}/api/v1/clients/{{client_id}}/competitors
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name": "Rival Pumps", "website": "rival.example.com", "category": "direct", "relevance": {"product": "solar pumps", "geography": "Gujarat"}, "monitor_interval_days": 7}
+
+### AI competitor suggestions (needs GROQ_API_KEY or GEMINI_API_KEY)
+POST {{base}}/api/v1/clients/{{client_id}}/competitors/suggest
+Authorization: Bearer {{token}}
+
+### Analyse a competitor (crawl + snapshot + change detection)
+POST {{base}}/api/v1/competitors/{{competitor_id}}/analyse
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Comparison and changes
+GET {{base}}/api/v1/clients/{{client_id}}/competitors/comparison
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/api/v1/clients/{{client_id}}/competitor-changes
+Authorization: Bearer {{token}}
+
+### Opportunities
+POST {{base}}/api/v1/clients/{{client_id}}/opportunities/analyse
+Authorization: Bearer {{token}}
+
+###
+POST {{base}}/api/v1/opportunities/{{opportunity_id}}/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"action": "approve"}

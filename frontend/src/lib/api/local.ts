@@ -7,7 +7,7 @@
 import {
   ApiError, type Activity, type Agent, type Client, type ClientInput, type DocumentMeta, type Product,
   type ProductInput, type ResearchJob, type Role, type Session, type Tenant, type User,
-  type Finding, type FindingType,
+  type Finding, type FindingType, type Competitor, type CompetitorInput,
 } from "../types";
 import { approvedStatus, buildReportMarkdown, cleanFinding, isInferred } from "../intelligence";
 import { normaliseUrl, validateClient, validateFile, validatePassword, validateProduct, isEmail } from "../validate";
@@ -38,12 +38,12 @@ async function ctx(minRole: Role = "staff"): Promise<{ user: StoredUser; tenant:
   return { user, tenant };
 }
 
-async function owned<T>(store: "clients" | "products" | "documents" | "jobs" | "users" | "findings", tenantId: string, id: string, label: string): Promise<Owned<T>> {
+async function owned<T>(store: "clients" | "products" | "documents" | "jobs" | "users" | "findings" | "competitors", tenantId: string, id: string, label: string): Promise<Owned<T>> {
   const r = await idb.get<Owned<T>>(store, id);
   if (!r || r.tenant_id !== tenantId) throw new ApiError(404, `${label} not found`);
   return r;
 }
-const scoped = async <T>(store: "clients" | "products" | "documents" | "jobs" | "activity" | "users" | "findings", tenantId: string) =>
+const scoped = async <T>(store: "clients" | "products" | "documents" | "jobs" | "activity" | "users" | "findings" | "competitors", tenantId: string) =>
   (await idb.all<Owned<T>>(store)).filter((r) => r.tenant_id === tenantId);
 
 async function log(tenant_id: string, user_id: string, action: string, entity_type: string, entity_id: string | null, summary: string, meta: Record<string, unknown> = {}) {
@@ -67,6 +67,35 @@ async function withCounts(c: Owned<Client>): Promise<Client> {
   const products = (await scoped<Product>("products", c.tenant_id)).filter((p) => p.client_id === c.id).length;
   const docs = (await scoped<DocumentMeta>("documents", c.tenant_id)).filter((d) => d.client_id === c.id).length;
   return { ...strip(c), product_count: products, document_count: docs };
+}
+
+const NO_CRAWL = "Website crawling, audits and competitor analysis run only on the GrowthCognix backend. This browser preview has no server, so nothing can be crawled here (and no results are simulated). You can still add and organise competitors.";
+const REL_KEYS = ["product", "application", "customer", "geography"];
+const host = (u?: string | null) => { try { return u ? new URL(u.includes("://") ? u : `https://${u}`).hostname.toLowerCase().replace(/^www\./, "") : null; } catch { return null; } };
+
+async function cleanCompetitor(tenantId: string, client: Client, b: Partial<CompetitorInput>, selfId?: string) {
+  const out: Partial<CompetitorInput> & { domain?: string | null } = {};
+  if (b.name !== undefined) { if (!b.name || b.name.trim().length < 2) throw new ApiError(422, "Name must be at least 2 characters", [{ field: "name", message: "Required" }]); out.name = b.name.trim().slice(0, 200); }
+  if (b.category !== undefined) { if (!["direct", "indirect", "substitute", "aspirational"].includes(b.category)) throw new ApiError(422, "Invalid category"); out.category = b.category; }
+  if (b.relevance !== undefined) {
+    const bad = Object.keys(b.relevance).filter((k) => !REL_KEYS.includes(k));
+    if (bad.length) throw new ApiError(422, `relevance keys must be ${REL_KEYS.join(", ")}`);
+    out.relevance = Object.fromEntries(Object.entries(b.relevance).map(([k, v]) => [k, (v || "").trim().slice(0, 300)]).filter(([, v]) => v));
+  }
+  if (b.geography !== undefined) out.geography = b.geography.map((g) => g.trim().slice(0, 100)).filter(Boolean).slice(0, 20);
+  if (b.notes !== undefined) out.notes = b.notes || null;
+  if (b.monitor_interval_days !== undefined) out.monitor_interval_days = b.monitor_interval_days || null;
+  if (b.website !== undefined) {
+    const d = host(b.website);
+    if (b.website && !d) throw new ApiError(422, "Enter a valid website (e.g. competitor.com)", [{ field: "website", message: "Invalid" }]);
+    if (d && d === host(client.website)) throw new ApiError(400, "That is the client's own website");
+    if (d) {
+      const dup = (await scoped<Competitor>("competitors", tenantId)).find((c) => c.client_id === client.id && c.domain === d && c.id !== selfId);
+      if (dup) throw new ApiError(409, `${dup.name} already uses that domain`);
+    }
+    out.website = d ? `https://${d}/` : null; out.domain = d;
+  }
+  return out;
 }
 
 const NO_AI = "AI analysis runs only on the GrowthCognix backend, where the Gemini/Groq API keys are kept. This browser preview has no server, so no analysis can run here. You can still add, edit and review findings by hand.";
@@ -210,6 +239,7 @@ export const localDriver: DataDriver = {
     for (const p of (await scoped<Product>("products", tenant.id)).filter((p) => p.client_id === id)) await idb.del("products", p.id);
     for (const d of (await scoped<DocumentMeta>("documents", tenant.id)).filter((d) => d.client_id === id)) { await idb.del("documents", d.id); await idb.del("blobs", d.id); }
     for (const f of (await scoped<Finding>("findings", tenant.id)).filter((f) => f.client_id === id)) await idb.del("findings", f.id);
+    for (const k of (await scoped<Competitor>("competitors", tenant.id)).filter((k) => k.client_id === id)) await idb.del("competitors", k.id);
     await idb.del("clients", id);
     await log(tenant.id, user.id, "client.deleted", "client", id, `Client ${c.company_name} permanently deleted`);
   },
@@ -415,4 +445,86 @@ export const localDriver: DataDriver = {
     const products = (await scoped<Product>("products", tenant.id)).filter((p) => p.client_id === clientId);
     return buildReportMarkdown(client.company_name, by, products);
   },
+
+  async crawlerStatus() {
+    await ctx();
+    return { provider: "none (browser preview)", firecrawl_configured: false, pagespeed_configured: false, max_pages_limit: 0, competitor_max_pages: 0,
+      defaults: { max_pages: 50, max_depth: 3, delay_seconds: 1, concurrency: 2, retries: 1, include: [], exclude: [], use_sitemap: true } };
+  },
+  async getClientWebsite(cid) { const { tenant } = await ctx(); const c = await owned<Client>("clients", tenant.id, cid, "Client"); return { website: null, client_website: c.website ?? null, latest_crawl: null, latest_audit: null }; },
+  async saveClientWebsite() { await ctx(); throw new ApiError(409, NO_CRAWL); },
+  async startAudit() { await ctx(); throw new ApiError(409, NO_CRAWL); },
+  async listCrawls(cid) { const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client"); return { items: [] }; },
+  async getCrawl() { await ctx(); throw new ApiError(404, "Crawl not found"); },
+  async cancelCrawl() { await ctx(); throw new ApiError(404, "Crawl not found"); },
+  async retryCrawl() { await ctx(); throw new ApiError(409, NO_CRAWL); },
+  async listCrawlPages() { await ctx(); return { items: [], total: 0 }; },
+  async getCrawledPage() { await ctx(); throw new ApiError(404, "Page not found"); },
+  async listAudits(cid) { const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client"); return { items: [] }; },
+  async auditFindings() { await ctx(); return { items: [], total: 0 }; },
+  async auditTopics() { await ctx(); return { items: [], basis: "" }; },
+  async auditReport() { await ctx(); throw new ApiError(404, "Audit not found"); },
+  async auditCsv() { await ctx(); throw new ApiError(404, "Audit not found"); },
+
+  async listCompetitors(cid, status) {
+    const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client");
+    const rows = (await scoped<Competitor>("competitors", tenant.id)).filter((c) => c.client_id === cid && (status ? c.status === status : ["active", "suggested"].includes(c.status)));
+    rows.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    return { items: rows.map(strip) as Competitor[] };
+  },
+  async addCompetitor(cid, b) {
+    const { user, tenant } = await ctx();
+    const client = await owned<Client>("clients", tenant.id, cid, "Client");
+    const active = (await scoped<Competitor>("competitors", tenant.id)).filter((c) => c.client_id === cid && c.status === "active").length;
+    if (active >= 30) throw new ApiError(400, "A client can track up to 30 competitors");
+    const data = await cleanCompetitor(tenant.id, client, { ...b, category: b.category || "direct", relevance: b.relevance || {}, geography: b.geography || [] });
+    if (!data.name) throw new ApiError(422, "Name is required", [{ field: "name", message: "Required" }]);
+    const c: Owned<Competitor> = { id: uid(), tenant_id: tenant.id, client_id: cid, name: data.name, website: data.website ?? null, domain: data.domain ?? null,
+      category: data.category!, relevance: data.relevance || {}, geography: data.geography || [], notes: data.notes ?? null, monitor_interval_days: data.monitor_interval_days ?? null,
+      origin: "user", status: "active", domain_valid: null, last_analysed_at: null, positioning: null, created_at: now(), updated_at: now() };
+    await idb.put("competitors", c);
+    await log(tenant.id, user.id, "competitor.added", "competitor", c.id, `Competitor ${c.name} added to ${client.company_name}`, { client_id: cid });
+    return strip(c) as Competitor;
+  },
+  async editCompetitor(id, b) {
+    const { user, tenant } = await ctx();
+    const c = await owned<Competitor>("competitors", tenant.id, id, "Competitor");
+    const client = await owned<Client>("clients", tenant.id, c.client_id, "Client");
+    const { status, ...rest } = b;
+    const data = await cleanCompetitor(tenant.id, client, rest, id);
+    const next = { ...c, ...data, ...(status ? { status } : {}), updated_at: now() } as Owned<Competitor>;
+    await idb.put("competitors", next);
+    await log(tenant.id, user.id, "competitor.edited", "competitor", id, `Competitor ${next.name} updated`, { client_id: c.client_id });
+    return strip(next) as Competitor;
+  },
+  async deleteCompetitor(id) {
+    const { user, tenant } = await ctx("manager");
+    const c = await owned<Competitor>("competitors", tenant.id, id, "Competitor");
+    await idb.del("competitors", id);
+    await log(tenant.id, user.id, "competitor.deleted", "competitor", id, `Competitor ${c.name} deleted`, { client_id: c.client_id });
+  },
+  async reviewCompetitor(id, action) {
+    const { user, tenant } = await ctx("manager");
+    const c = await owned<Competitor>("competitors", tenant.id, id, "Competitor");
+    const next = { ...c, status: action === "accept" ? "active" : "rejected", updated_at: now() } as Owned<Competitor>;
+    await idb.put("competitors", next);
+    await log(tenant.id, user.id, `competitor.${action}ed`, "competitor", id, `Competitor ${c.name} ${action}ed`, { client_id: c.client_id });
+    return strip(next) as Competitor;
+  },
+  async suggestCompetitors() { await ctx(); throw new ApiError(409, NO_AI); },
+  async analyseCompetitor() { await ctx(); throw new ApiError(409, NO_CRAWL); },
+  async competitorProfile(id) {
+    const { tenant } = await ctx();
+    const c = await owned<Competitor>("competitors", tenant.id, id, "Competitor");
+    return { competitor: strip(c) as Competitor, latest_snapshot: null, snapshots: 0, latest_crawl: null };
+  },
+  async competitorChanges(id) { const { tenant } = await ctx(); await owned("competitors", tenant.id, id, "Competitor"); return { items: [] }; },
+  async clientCompetitorChanges(cid) { const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client"); return { items: [] }; },
+  async comparison(cid) { const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client"); return { items: [], basis: "" }; },
+
+  async analyseOpportunities(cid) { const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client"); return { created: 0, note: NO_CRAWL }; },
+  async listOpportunities(cid) { const { tenant } = await ctx(); await owned("clients", tenant.id, cid, "Client"); return { items: [], total: 0 }; },
+  async reviewOpportunity() { await ctx(); throw new ApiError(404, "Opportunity not found"); },
+  async editOpportunity() { await ctx(); throw new ApiError(404, "Opportunity not found"); },
+  async deleteOpportunity() { await ctx(); throw new ApiError(404, "Opportunity not found"); },
 };

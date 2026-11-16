@@ -77,6 +77,11 @@ def list_agents(ctx: Ctx = Depends(get_ctx)):
             jobs = scoped(ctx, AnalysisJob)
             order = AnalysisJob.created_at.desc()
             status = "active" if ai_ready else "needs_setup"
+        elif a["key"] in ("website_auditor", "competitor_analyst"):  # Phase 3: runs as crawl jobs (no AI key needed)
+            from app.models import CrawlJob
+            jobs = scoped(ctx, CrawlJob).where(CrawlJob.kind == ("audit" if a["key"] == "website_auditor" else "competitor"))
+            order = CrawlJob.created_at.desc()
+            status = "active"
         else:
             jobs = scoped(ctx, ResearchJob).where(ResearchJob.agent_key == a["key"])
             order = ResearchJob.created_at.desc()

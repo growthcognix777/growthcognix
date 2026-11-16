@@ -34,6 +34,19 @@ class Settings(BaseSettings):
     website_max_bytes: int = 2_000_000
     website_allow_private: bool = False  # SSRF guard; never enable in production
 
+    # ---- Phase 3: crawler, audit, competitors ----
+    crawler_provider: str = "native"  # native (built-in, robots-aware) | firecrawl
+    firecrawl_api_url: str = ""  # self-hosted (e.g. http://firecrawl:3002) or https://api.firecrawl.dev
+    firecrawl_api_key: str = ""
+    crawl_max_pages_limit: int = 500  # hard ceiling regardless of per-crawl config
+    crawl_default_max_pages: int = 50
+    crawl_default_max_depth: int = 3
+    crawl_default_delay_seconds: float = 1.0
+    crawl_timeout_seconds: int = 20
+    crawl_max_bytes: int = 3_000_000
+    competitor_max_pages: int = 25
+    pagespeed_api_key: str = ""  # Google PageSpeed Insights API (free key); empty = PageSpeed skipped
+
     @property
     def cors_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

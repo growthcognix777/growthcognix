@@ -19,3 +19,15 @@ from app.models.intelligence import (  # noqa: F401,E402
     TargetMarket,
     WebsiteSnapshot,
 )
+from app.models.web import (  # noqa: F401,E402
+    Competitor,
+    CompetitorChange,
+    CompetitorSnapshot,
+    CrawledPage,
+    CrawlJob,
+    KeywordTopic,
+    Opportunity,
+    SEOFinding,
+    Website,
+    WebsiteAudit,
+)

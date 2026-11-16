@@ -59,3 +59,53 @@ Authorization: Bearer {{token}}
 ### Activity log
 GET {{base}}/api/v1/activity
 Authorization: Bearer {{token}}
+
+### ---------------- Phase 2: Client Intelligence
+### AI provider status
+GET {{base}}/api/v1/intelligence/providers
+Authorization: Bearer {{token}}
+
+### Start an analysis (all stages)
+POST {{base}}/api/v1/clients/{{client_id}}/intelligence/analyses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### List analyses for a client
+GET {{base}}/api/v1/clients/{{client_id}}/intelligence/analyses
+Authorization: Bearer {{token}}
+
+### Retry failed stages
+POST {{base}}/api/v1/intelligence/analyses/{{analysis_id}}/retry
+Authorization: Bearer {{token}}
+
+### Intelligence summary
+GET {{base}}/api/v1/clients/{{client_id}}/intelligence
+Authorization: Bearer {{token}}
+
+### Markdown report
+GET {{base}}/api/v1/clients/{{client_id}}/intelligence/report.md
+Authorization: Bearer {{token}}
+
+### List findings (profile | application | market | persona | insight)
+GET {{base}}/api/v1/clients/{{client_id}}/intelligence/findings/persona
+Authorization: Bearer {{token}}
+
+### Add a finding by hand
+POST {{base}}/api/v1/clients/{{client_id}}/intelligence/findings/market
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"data": {"scope": "country", "name": "Germany", "priority": "medium"}, "note": "Client call, 16 Nov"}
+
+### Approve a finding (manager+)
+POST {{base}}/api/v1/intelligence/findings/market/{{finding_id}}/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"action": "approve"}
+
+### Extract a document's text
+POST {{base}}/api/v1/documents/{{document_id}}/extract
+Authorization: Bearer {{token}}

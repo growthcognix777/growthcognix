@@ -96,7 +96,9 @@ def test_roles_enforced(api):
 def test_jobs_agents_dashboard_no_fake_data(api):
     h = register(api)
     agents = api.get("/api/v1/agents", headers=h).json()
-    assert len(agents) == 8 and all(a["status"] == "planned" and a["total_jobs"] == 0 for a in agents)
+    assert len(agents) == 8 and all(a["total_jobs"] == 0 for a in agents)
+    assert all(a["status"] == "planned" for a in agents if a["key"] != "business_analyst")
+    assert next(a for a in agents if a["key"] == "business_analyst")["status"] == "needs_setup"  # no AI key in tests
     assert api.post("/api/v1/jobs", headers=h, json={"job_type": "market_research"}).status_code == 409
     s = api.get("/api/v1/dashboard/summary", headers=h).json()
     assert s == {"active_clients": 0, "archived_clients": 0, "products": 0, "documents": 0,

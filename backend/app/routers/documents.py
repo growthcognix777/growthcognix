@@ -97,3 +97,24 @@ def delete_document(document_id: str, ctx: Ctx = Depends(require_role("manager")
     log(ctx, "document.deleted", "document", doc.id, f"{doc.original_name} deleted", client_id=doc.client_id)
     ctx.db.delete(doc)
     ctx.db.commit()
+
+
+@router.post("/{doc_id}/extract")
+def extract_now(doc_id: str, ctx: Ctx = Depends(get_ctx)):
+    """Extract text from one document now (PDF/DOCX are quick and local; images use Gemini vision)."""
+    from app.services.intelligence.document_extractor import extract_document
+    doc = get_owned(ctx, Document, doc_id, "Document")
+    ex = extract_document(ctx.db, doc)
+    log(ctx, "document.extracted", "document", doc.id, f"Text extraction {doc.extraction_status} for {doc.original_name}")
+    ctx.db.commit()
+    return {"document_id": doc.id, "extraction_status": doc.extraction_status, "extractor": ex.extractor,
+            "pages": ex.pages, "characters": len(ex.text or ""), "error": ex.error}
+
+
+@router.get("/{doc_id}/text")
+def document_text(doc_id: str, ctx: Ctx = Depends(get_ctx)):
+    from app.models import DocumentExtraction
+    doc = get_owned(ctx, Document, doc_id, "Document")
+    ex = ctx.db.scalar(scoped(ctx, DocumentExtraction).where(DocumentExtraction.document_id == doc.id))
+    return {"document_id": doc.id, "extraction_status": doc.extraction_status,
+            "text": ex.text if ex else None, "pages": ex.pages if ex else None, "error": ex.error if ex else None}

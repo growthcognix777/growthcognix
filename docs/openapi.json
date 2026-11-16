@@ -2,8 +2,8 @@
  "openapi": "3.1.0",
  "info": {
   "title": "GrowthCognix API",
-  "description": "GrowthCognix \u2014 multi-tenant growth intelligence platform (Phase 1 foundation).",
-  "version": "1.0.0-phase1"
+  "description": "GrowthCognix \u2014 multi-tenant growth intelligence platform (Phase 1 foundation + Phase 2 client intelligence engine).",
+  "version": "2.0.0-phase2"
  },
  "paths": {
   "/api/v1/auth/register": {
@@ -1179,6 +1179,97 @@
     }
    }
   },
+  "/api/v1/documents/{doc_id}/extract": {
+   "post": {
+    "tags": [
+     "documents"
+    ],
+    "summary": "Extract Now",
+    "description": "Extract text from one document now (PDF/DOCX are quick and local; images use Gemini vision).",
+    "operationId": "extract_now_api_v1_documents__doc_id__extract_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "doc_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Doc Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/documents/{doc_id}/text": {
+   "get": {
+    "tags": [
+     "documents"
+    ],
+    "summary": "Document Text",
+    "operationId": "document_text_api_v1_documents__doc_id__text_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "doc_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Doc Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/jobs": {
    "get": {
     "tags": [
@@ -1557,6 +1648,923 @@
     ]
    }
   },
+  "/api/v1/intelligence/providers": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Providers",
+    "operationId": "providers_api_v1_intelligence_providers_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence/analyses": {
+   "post": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Start Analysis",
+    "operationId": "start_analysis_api_v1_clients__client_id__intelligence_analyses_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AnalysisStart"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnalysisOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "List Analyses",
+    "operationId": "list_analyses_api_v1_clients__client_id__intelligence_analyses_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/AnalysisOut"
+         },
+         "title": "Response List Analyses Api V1 Clients  Client Id  Intelligence Analyses Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/intelligence/analyses/{job_id}": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Get Analysis",
+    "operationId": "get_analysis_api_v1_intelligence_analyses__job_id__get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnalysisOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/intelligence/analyses/{job_id}/retry": {
+   "post": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Retry Analysis",
+    "operationId": "retry_analysis_api_v1_intelligence_analyses__job_id__retry_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnalysisOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/intelligence/analyses/{job_id}/cancel": {
+   "post": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Cancel Analysis",
+    "operationId": "cancel_analysis_api_v1_intelligence_analyses__job_id__cancel_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnalysisOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Client Intelligence",
+    "operationId": "client_intelligence_api_v1_clients__client_id__intelligence_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence/report.md": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Client Report Md",
+    "operationId": "client_report_md_api_v1_clients__client_id__intelligence_report_md_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "text/plain": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence/findings/{ftype}": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "List Findings",
+    "operationId": "list_findings_api_v1_clients__client_id__intelligence_findings__ftype__get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "ftype",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "profile",
+        "application",
+        "market",
+        "persona",
+        "insight"
+       ],
+       "type": "string",
+       "title": "Ftype"
+      }
+     },
+     {
+      "name": "product_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Product Id"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "verified",
+          "ai_hypothesis",
+          "needs_review",
+          "rejected"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "include_rejected",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Include Rejected"
+      }
+     },
+     {
+      "name": "category",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Category"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Create Finding",
+    "description": "A human-entered finding. It starts as `needs_review` (or `ai_hypothesis` for inferred kinds is NOT used:\nhuman entries of personas/markets are still judgement calls, so they stay `is_inferred`).",
+    "operationId": "create_finding_api_v1_clients__client_id__intelligence_findings__ftype__post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "ftype",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "profile",
+        "application",
+        "market",
+        "persona",
+        "insight"
+       ],
+       "type": "string",
+       "title": "Ftype"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FindingIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence/products": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Product Intelligence",
+    "operationId": "product_intelligence_api_v1_clients__client_id__intelligence_products_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "product_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Product Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence/personas": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Personas",
+    "operationId": "personas_api_v1_clients__client_id__intelligence_personas_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/intelligence/markets": {
+   "get": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Markets",
+    "operationId": "markets_api_v1_clients__client_id__intelligence_markets_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/intelligence/findings/{ftype}/{finding_id}": {
+   "patch": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Edit Finding",
+    "operationId": "edit_finding_api_v1_intelligence_findings__ftype___finding_id__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "ftype",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "profile",
+        "application",
+        "market",
+        "persona",
+        "insight"
+       ],
+       "type": "string",
+       "title": "Ftype"
+      }
+     },
+     {
+      "name": "finding_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Finding Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FindingPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Delete Finding",
+    "operationId": "delete_finding_api_v1_intelligence_findings__ftype___finding_id__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "ftype",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "profile",
+        "application",
+        "market",
+        "persona",
+        "insight"
+       ],
+       "type": "string",
+       "title": "Ftype"
+      }
+     },
+     {
+      "name": "finding_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Finding Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/intelligence/findings/{ftype}/{finding_id}/review": {
+   "post": {
+    "tags": [
+     "client intelligence"
+    ],
+    "summary": "Review Finding",
+    "operationId": "review_finding_api_v1_intelligence_findings__ftype___finding_id__review_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "ftype",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "profile",
+        "application",
+        "market",
+        "persona",
+        "insight"
+       ],
+       "type": "string",
+       "title": "Ftype"
+      }
+     },
+     {
+      "name": "finding_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Finding Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReviewIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/health": {
    "get": {
     "tags": [
@@ -1620,7 +2628,6 @@
       "title": "Summary"
      },
      "meta": {
-      "additionalProperties": true,
       "type": "object",
       "title": "Meta"
      },
@@ -1642,6 +2649,173 @@
      "created_at"
     ],
     "title": "ActivityOut"
+   },
+   "AnalysisOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "client_id": {
+      "type": "string",
+      "title": "Client Id"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "progress": {
+      "type": "integer",
+      "title": "Progress"
+     },
+     "stages": {
+      "items": {
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Stages"
+     },
+     "attempts": {
+      "type": "integer",
+      "title": "Attempts"
+     },
+     "provider": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Provider"
+     },
+     "model": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model"
+     },
+     "params": {
+      "type": "object",
+      "title": "Params"
+     },
+     "error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error"
+     },
+     "summary": {
+      "anyOf": [
+       {
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Summary"
+     },
+     "started_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Started At"
+     },
+     "completed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Completed At"
+     },
+     "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "client_id",
+     "status",
+     "progress",
+     "stages",
+     "attempts",
+     "provider",
+     "model",
+     "params",
+     "error",
+     "summary",
+     "started_at",
+     "completed_at",
+     "created_at"
+    ],
+    "title": "AnalysisOut"
+   },
+   "AnalysisStart": {
+    "properties": {
+     "stages": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array",
+        "maxItems": 9
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Stages"
+     },
+     "product_ids": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array",
+        "maxItems": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Ids"
+     },
+     "re_extract": {
+      "type": "boolean",
+      "title": "Re Extract",
+      "default": false
+     }
+    },
+    "type": "object",
+    "title": "AnalysisStart"
    },
    "Body_upload_document_api_v1_documents_post": {
     "properties": {
@@ -2284,6 +3458,44 @@
     ],
     "title": "DocumentOut"
    },
+   "FindingIn": {
+    "properties": {
+     "data": {
+      "type": "object",
+      "title": "Data"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data"
+    ],
+    "title": "FindingIn"
+   },
+   "FindingPatch": {
+    "properties": {
+     "data": {
+      "type": "object",
+      "title": "Data"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data"
+    ],
+    "title": "FindingPatch"
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -2329,7 +3541,6 @@
       "title": "Agent Key"
      },
      "params": {
-      "additionalProperties": true,
       "type": "object",
       "title": "Params"
      }
@@ -2425,7 +3636,6 @@
      "result": {
       "anyOf": [
        {
-        "additionalProperties": true,
         "type": "object"
        },
        {
@@ -2435,7 +3645,6 @@
       "title": "Result"
      },
      "params": {
-      "additionalProperties": true,
       "type": "object",
       "title": "Params"
      },
@@ -3007,6 +4216,36 @@
      "password"
     ],
     "title": "RegisterIn"
+   },
+   "ReviewIn": {
+    "properties": {
+     "action": {
+      "type": "string",
+      "enum": [
+       "approve",
+       "reject",
+       "needs_review"
+      ],
+      "title": "Action"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "action"
+    ],
+    "title": "ReviewIn"
    },
    "TenantOut": {
     "properties": {

@@ -1,6 +1,7 @@
 import type {
   Activity, Agent, Client, ClientInput, DashboardSummary, DocumentMeta, Page, Product, ProductInput,
-  ResearchJob, Role, Session, Tenant, User,
+  ResearchJob, Role, Session, Tenant, User, Analysis, Finding, FindingType, IntelligenceProviders,
+  IntelligenceSummary, VerificationStatus,
 } from "../types";
 
 /** One contract, two drivers: HttpDriver (FastAPI) and LocalDriver (browser sandbox for GitHub Pages). */
@@ -41,4 +42,18 @@ export interface DataDriver {
 
   listActivity(q?: { limit?: number; entity_type?: string }): Promise<Page<Activity>>;
   dashboard(): Promise<DashboardSummary>;
+
+  // Phase 2 — Client Intelligence. AI analysis runs only on the backend (keys never reach the browser).
+  intelligenceProviders(): Promise<IntelligenceProviders>;
+  startAnalysis(clientId: string, b?: { stages?: string[]; product_ids?: string[]; re_extract?: boolean }): Promise<Analysis>;
+  listAnalyses(clientId: string): Promise<Analysis[]>;
+  retryAnalysis(id: string): Promise<Analysis>;
+  cancelAnalysis(id: string): Promise<Analysis>;
+  intelligenceSummary(clientId: string): Promise<IntelligenceSummary>;
+  listFindings(clientId: string, type: FindingType, q?: { status?: VerificationStatus; include_rejected?: boolean }): Promise<Page<Finding>>;
+  createFinding(clientId: string, type: FindingType, b: { data: Record<string, unknown>; note?: string | null }): Promise<Finding>;
+  editFinding(type: FindingType, id: string, data: Record<string, unknown>): Promise<Finding>;
+  reviewFinding(type: FindingType, id: string, action: "approve" | "reject" | "needs_review", note?: string | null): Promise<Finding>;
+  deleteFinding(type: FindingType, id: string): Promise<void>;
+  reportMarkdown(clientId: string): Promise<string>;
 }

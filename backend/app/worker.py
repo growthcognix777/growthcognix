@@ -1,4 +1,4 @@
-"""RQ worker entrypoint. Phase 1 has no executable job types; Phase 2 registers real tasks here.
+"""RQ worker entrypoint. Phase 2 runs Client Intelligence analyses (app.services.intelligence.pipeline.run_analysis).
 
 Run: rq worker --url $REDIS_URL growthcognix
 """

@@ -13,8 +13,8 @@ A multi-tenant AI business growth and marketing intelligence platform for digita
 
 | Phase | Module | Status |
 |---|---|---|
-| 1 | Foundation: auth, agency dashboard, clients, products, documents, agent centre, research jobs, activity log | ✅ This release |
-| 2 | Client Intelligence Engine (document extraction, business profiles, evidence & confidence) | Planned |
+| 1 | Foundation: auth, agency dashboard, clients, products, documents, agent centre, research jobs, activity log | ✅ Released |
+| 2 | Client Intelligence Engine (document extraction, business profiles, applications, personas, markets, evidence & review) | ✅ This release |
 | 3 | Website Audit & Competitor Intelligence (Firecrawl + OpenCrawl/Scrapy, PageSpeed) | Planned |
 | 4 | Global Buyer Discovery & Lead Intelligence (India + export markets, 100-pt lead score) | Planned |
 | 5 | AI Marketing Strategy & Campaign Automation (human approval before publishing/spend) | Planned |
@@ -97,6 +97,24 @@ API collection: `docs/api-requests.http` · OpenAPI spec: `docs/openapi.json` ·
 - Registration is open; team members are added by admins with a temporary password (no email invites yet).
 - Uploaded files are not virus-scanned.
 - GitHub Pages preview has no backend; it runs the browser sandbox.
+
+## Phase 2: Client Intelligence Engine
+
+- **Tables (migration `0002`):** business_profiles, product_applications, target_markets, buyer_personas, business_insights, evidence_sources, analysis_jobs, document_extractions, website_snapshots. Every row carries `tenant_id`.
+- **AI providers:** Gemini (long analysis) and Groq (fast calls), free tiers, chosen by env vars (`AI_ANALYSIS_PROVIDER`, `AI_FAST_PROVIDER`, `GEMINI_API_KEY`, `GROQ_API_KEY`). Keys stay on the server.
+- **Pipeline (RQ worker, resumable):** document extraction (PDF/DOCX text; images via Gemini) → website read (SSRF-guarded) → company profile → product intelligence → applications & industries → buyer personas → target markets (India, states, cities, countries, export) → opportunities, risks & gaps. Per-stage status, cancel, retry of failed stages only.
+- **Anti-fabrication rules:** facts, specs, prices, MOQ, capacity and certifications are stored only with an exact quote found in a source; otherwise they're dropped and stay "—". Personas, markets, indirect uses and opportunities are always AI hypotheses and can never be shown as Verified.
+- **Review:** manager+ approve / reject / send back; any edit clears approval; admin+ can delete (reject keeps the audit trail). Team members can add findings by hand with a source note.
+- **UI:** client → Intelligence tab with AI analysis status, Overview, Products & applications, Buyer personas, Target markets, Opportunities, Evidence, History, and a Markdown report download.
+- **API:** `GET /api/v1/intelligence/providers`, `POST|GET /api/v1/clients/{id}/intelligence/analyses`, `POST /api/v1/intelligence/analyses/{id}/retry|cancel`, `GET /api/v1/clients/{id}/intelligence`, `GET .../intelligence/report.md`, `GET|POST .../intelligence/findings/{type}`, `PATCH|DELETE /api/v1/intelligence/findings/{type}/{id}`, `POST .../review`, `POST /api/v1/documents/{id}/extract`, `GET /api/v1/documents/{id}/text`.
+
+### Honest limitations (Phase 2)
+
+- AI stages need your own free Gemini and/or Groq key; without one they return 409 and nothing is generated. Extraction still runs.
+- The GitHub Pages preview has no server, so it cannot run AI analysis; findings there are added and reviewed by hand and stay in the browser.
+- Scanned PDFs without a text layer are marked `no_text` (no OCR yet); image OCR needs the Gemini key.
+- The website SSRF guard checks DNS before fetching but is not immune to DNS rebinding; block private egress at the network level in production.
+- Free-tier rate limits apply (Gemini/Groq per-minute and per-day caps); long catalogues are truncated to the model's context budget.
 
 ## Before any public/VPS deployment
 

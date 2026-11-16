@@ -1,7 +1,7 @@
-"""Registry of planned specialist agents. All inactive until real execution APIs exist (Phase 2+)."""
+"""Registry of specialist agents. business_analyst runs from Phase 2 (Client Intelligence); the rest are planned."""
 AGENTS = [
     {"key": "business_analyst", "name": "Business Analyst", "phase": 2,
-     "description": "Builds a verified business profile from client data and documents."},
+     "description": "Builds the client intelligence profile from client records, documents and website, with evidence."},
     {"key": "website_auditor", "name": "Website Auditor", "phase": 3,
      "description": "Crawls client websites and runs technical SEO and performance audits."},
     {"key": "market_researcher", "name": "Market Researcher", "phase": 4,

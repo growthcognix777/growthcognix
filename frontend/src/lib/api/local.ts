@@ -7,7 +7,9 @@
 import {
   ApiError, type Activity, type Agent, type Client, type ClientInput, type DocumentMeta, type Product,
   type ProductInput, type ResearchJob, type Role, type Session, type Tenant, type User,
+  type Finding, type FindingType,
 } from "../types";
+import { approvedStatus, buildReportMarkdown, cleanFinding, isInferred } from "../intelligence";
 import { normaliseUrl, validateClient, validateFile, validatePassword, validateProduct, isEmail } from "../validate";
 import { AGENTS } from "../agents";
 import type { DataDriver } from "./contract";
@@ -36,12 +38,12 @@ async function ctx(minRole: Role = "staff"): Promise<{ user: StoredUser; tenant:
   return { user, tenant };
 }
 
-async function owned<T>(store: "clients" | "products" | "documents" | "jobs" | "users", tenantId: string, id: string, label: string): Promise<Owned<T>> {
+async function owned<T>(store: "clients" | "products" | "documents" | "jobs" | "users" | "findings", tenantId: string, id: string, label: string): Promise<Owned<T>> {
   const r = await idb.get<Owned<T>>(store, id);
   if (!r || r.tenant_id !== tenantId) throw new ApiError(404, `${label} not found`);
   return r;
 }
-const scoped = async <T>(store: "clients" | "products" | "documents" | "jobs" | "activity" | "users", tenantId: string) =>
+const scoped = async <T>(store: "clients" | "products" | "documents" | "jobs" | "activity" | "users" | "findings", tenantId: string) =>
   (await idb.all<Owned<T>>(store)).filter((r) => r.tenant_id === tenantId);
 
 async function log(tenant_id: string, user_id: string, action: string, entity_type: string, entity_id: string | null, summary: string, meta: Record<string, unknown> = {}) {
@@ -65,6 +67,15 @@ async function withCounts(c: Owned<Client>): Promise<Client> {
   const products = (await scoped<Product>("products", c.tenant_id)).filter((p) => p.client_id === c.id).length;
   const docs = (await scoped<DocumentMeta>("documents", c.tenant_id)).filter((d) => d.client_id === c.id).length;
   return { ...strip(c), product_count: products, document_count: docs };
+}
+
+const NO_AI = "AI analysis runs only on the GrowthCognix backend, where the Gemini/Groq API keys are kept. This browser preview has no server, so no analysis can run here. You can still add, edit and review findings by hand.";
+const RANK_OK = (r: Role, min: Role) => RANK[r] >= RANK[min];
+
+async function checkProduct(tenantId: string, clientId: string, data: Record<string, unknown>) {
+  if (!data.product_id) return;
+  const p = await owned<Product>("products", tenantId, String(data.product_id), "Product");
+  if (p.client_id !== clientId) throw new ApiError(400, "Product does not belong to this client");
 }
 
 function cleanClient<T extends Partial<ClientInput>>(b: T): T {
@@ -198,6 +209,7 @@ export const localDriver: DataDriver = {
     if (!c.archived_at) throw new ApiError(400, "Archive the client before deleting it permanently");
     for (const p of (await scoped<Product>("products", tenant.id)).filter((p) => p.client_id === id)) await idb.del("products", p.id);
     for (const d of (await scoped<DocumentMeta>("documents", tenant.id)).filter((d) => d.client_id === id)) { await idb.del("documents", d.id); await idb.del("blobs", d.id); }
+    for (const f of (await scoped<Finding>("findings", tenant.id)).filter((f) => f.client_id === id)) await idb.del("findings", f.id);
     await idb.del("clients", id);
     await log(tenant.id, user.id, "client.deleted", "client", id, `Client ${c.company_name} permanently deleted`);
   },
@@ -319,5 +331,88 @@ export const localDriver: DataDriver = {
       team_members: (await scoped("users", tenant.id)).length,
       jobs_running: jobs.filter((j) => j.status === "queued" || j.status === "running").length,
     };
+  },
+
+  async intelligenceProviders() {
+    await ctx();
+    return { providers: [], stages: [] };
+  },
+  async startAnalysis() { await ctx(); throw new ApiError(409, NO_AI); },
+  async listAnalyses(clientId) { const { tenant } = await ctx(); await owned("clients", tenant.id, clientId, "Client"); return []; },
+  async retryAnalysis() { await ctx(); throw new ApiError(409, NO_AI); },
+  async cancelAnalysis() { await ctx(); throw new ApiError(404, "Analysis not found"); },
+  async intelligenceSummary(clientId) {
+    const { tenant } = await ctx();
+    await owned("clients", tenant.id, clientId, "Client");
+    const rows = (await scoped<Finding>("findings", tenant.id)).filter((f) => f.client_id === clientId);
+    const docs = (await scoped<DocumentMeta>("documents", tenant.id)).filter((d) => d.client_id === clientId);
+    const counts = { verified: 0, ai_hypothesis: 0, needs_review: 0, rejected: 0 };
+    rows.forEach((f) => { if (f.verification_status !== "rejected") counts[f.verification_status]++; });
+    return { status_counts: counts, last_analysis: null,
+      sources: { documents: docs.length, documents_extracted: 0, evidence_items: rows.reduce((n, f) => n + f.evidence.length, 0) } };
+  },
+  async listFindings(clientId, type, q) {
+    const { tenant } = await ctx();
+    await owned("clients", tenant.id, clientId, "Client");
+    let rows = (await scoped<Finding>("findings", tenant.id)).filter((f) => f.client_id === clientId && f.type === type);
+    if (q?.status) rows = rows.filter((f) => f.verification_status === q.status);
+    else if (!q?.include_rejected) rows = rows.filter((f) => f.verification_status !== "rejected");
+    rows.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    return { items: rows.map(strip) as Finding[], total: rows.length };
+  },
+  async createFinding(clientId, type, b) {
+    const { user, tenant } = await ctx();
+    const client = await owned<Client>("clients", tenant.id, clientId, "Client");
+    const data = cleanFinding(type, b.data, false);
+    await checkProduct(tenant.id, clientId, data);
+    const t = now();
+    const f: Owned<Finding> = { id: uid(), tenant_id: tenant.id, type, client_id: clientId, verification_status: "needs_review",
+      confidence: null, is_inferred: isInferred(type, data), approved: false, origin: "user", edited: false, analysis_job_id: null,
+      reviewed_by: null, reviewed_at: null, review_note: null, created_at: t, updated_at: t, data,
+      evidence: [{ id: uid(), source_type: "user", source_url: null, document_id: null, excerpt: (b.note || "Entered by a team member").slice(0, 600), quote_matched: null, created_at: t }] };
+    await idb.put("findings", f);
+    await log(tenant.id, user.id, "finding.created", type, f.id, `${type[0].toUpperCase() + type.slice(1)} finding added for ${client.company_name}`, { client_id: clientId });
+    return strip(f) as Finding;
+  },
+  async editFinding(type, id, patch) {
+    const { user, tenant } = await ctx();
+    const f = await owned<Finding>("findings", tenant.id, id, "Finding");
+    if (f.type !== type) throw new ApiError(404, "Finding not found");
+    const data = cleanFinding(type, patch, true);
+    await checkProduct(tenant.id, f.client_id, data);
+    const next: Owned<Finding> = { ...f, data: { ...f.data, ...data }, edited: true, approved: false, updated_at: now(),
+      verification_status: ["verified", "rejected"].includes(f.verification_status) ? (f.is_inferred ? "ai_hypothesis" : "needs_review") : f.verification_status };
+    await idb.put("findings", next);
+    await log(tenant.id, user.id, "finding.edited", type, id, `${type[0].toUpperCase() + type.slice(1)} finding edited`, { client_id: f.client_id, fields: Object.keys(data).sort() });
+    return strip(next) as Finding;
+  },
+  async reviewFinding(type, id, action, note) {
+    const { user, tenant } = await ctx();
+    if (!RANK_OK(user.role, "manager")) throw new ApiError(403, "Requires manager role or higher");
+    const f = await owned<Finding>("findings", tenant.id, id, "Finding");
+    if (f.type !== type) throw new ApiError(404, "Finding not found");
+    const status = action === "approve" ? approvedStatus(f) : action === "reject" ? "rejected" : "needs_review";
+    const next: Owned<Finding> = { ...f, approved: action === "approve", verification_status: status,
+      reviewed_by: user.id, reviewed_at: now(), review_note: note || null, updated_at: now() };
+    await idb.put("findings", next);
+    const verb = action === "approve" ? "approved" : action === "reject" ? "rejected" : "sent back for review";
+    await log(tenant.id, user.id, `finding.${action}`, type, id, `${type[0].toUpperCase() + type.slice(1)} finding ${verb}`, { client_id: f.client_id });
+    return strip(next) as Finding;
+  },
+  async deleteFinding(type, id) {
+    const { user, tenant } = await ctx();
+    if (!RANK_OK(user.role, "admin")) throw new ApiError(403, "Requires admin role or higher (reject keeps an audit trail instead)");
+    const f = await owned<Finding>("findings", tenant.id, id, "Finding");
+    await idb.del("findings", id);
+    await log(tenant.id, user.id, "finding.deleted", type, id, `${type[0].toUpperCase() + type.slice(1)} finding deleted`, { client_id: f.client_id });
+  },
+  async reportMarkdown(clientId) {
+    const { tenant } = await ctx();
+    const client = await owned<Client>("clients", tenant.id, clientId, "Client");
+    const rows = (await scoped<Finding>("findings", tenant.id)).filter((f) => f.client_id === clientId).sort((a, b) => a.created_at.localeCompare(b.created_at));
+    const by = { profile: [], application: [], market: [], persona: [], insight: [] } as Record<FindingType, Finding[]>;
+    rows.forEach((f) => by[f.type].push(f));
+    const products = (await scoped<Product>("products", tenant.id)).filter((p) => p.client_id === clientId);
+    return buildReportMarkdown(client.company_name, by, products);
   },
 };

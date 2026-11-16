@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { DocumentTable, Uploader } from "@/components/Documents";
+import { ClientIntelligence } from "@/components/Intelligence";
 import { AddProductButton, ProductCards, ProductModal } from "@/components/Products";
 import { Badge, Button, ButtonLink, Card, CardHeader, ErrorBox, Skeleton, Spinner, cx } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -93,9 +94,8 @@ function Detail() {
         </Card>
       )}
 
-      {tab === "Intelligence" && (
-        <Card><CardHeader title="Client intelligence" subtitle="Business profile, applications, buyer personas and target markets." />
-          <div className="p-5 text-sm text-navy-700">The Client Intelligence Engine arrives in Phase 2. It will read this client&apos;s documents and catalogue, and every finding will show its source and a status of Verified, AI hypothesis, Needs review or Rejected. Nothing is shown here until a real analysis has run.</div></Card>
+      {tab === "Intelligence" && (products.loading ? <Skeleton /> :
+        <ClientIntelligence clientId={c.id} clientName={c.company_name} archived={!!c.archived_at} products={products.data?.items || []} />
       )}
 
       {tab === "Activity" && (

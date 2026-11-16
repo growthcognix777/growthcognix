@@ -71,3 +71,30 @@ export class ApiError extends Error {
   status: number; errors: FieldError[];
   constructor(status: number, message: string, errors: FieldError[] = []) { super(message); this.status = status; this.errors = errors; }
 }
+
+// ---------------------------------------------------------------- Phase 2: Client Intelligence
+export type FindingType = "profile" | "application" | "market" | "persona" | "insight";
+export type VerificationStatus = "verified" | "ai_hypothesis" | "needs_review" | "rejected";
+export interface Evidence {
+  id: string; source_type: string; source_url: string | null; document_id: string | null;
+  excerpt: string | null; quote_matched: boolean | null; created_at: string;
+}
+export interface Finding {
+  id: string; type: FindingType; client_id: string; verification_status: VerificationStatus;
+  confidence: number | null; is_inferred: boolean; approved: boolean; origin: string; edited: boolean;
+  analysis_job_id: string | null; reviewed_by: string | null; reviewed_at: string | null; review_note: string | null;
+  created_at: string; updated_at: string; data: Record<string, unknown>; evidence: Evidence[];
+}
+export interface AnalysisStage { key: string; label: string; status: string; error: string | null; result: Record<string, unknown> | null; }
+export interface Analysis {
+  id: string; client_id: string; status: JobStatus; progress: number; stages: AnalysisStage[]; attempts: number;
+  provider: string | null; model: string | null; params: Record<string, unknown>; error: string | null;
+  summary: Record<string, unknown> | null; started_at: string | null; completed_at: string | null; created_at: string;
+}
+export interface ProviderInfo { name: string; model: string; configured: boolean; used_for: string; }
+export interface IntelligenceProviders { providers: ProviderInfo[]; stages: string[]; }
+export interface IntelligenceSummary {
+  status_counts: Record<VerificationStatus, number>;
+  sources: { documents: number; documents_extracted: number; evidence_items: number };
+  last_analysis: Analysis | null;
+}

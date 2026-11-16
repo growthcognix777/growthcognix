@@ -91,4 +91,21 @@ export const httpDriver: DataDriver = {
 
   listActivity: (q) => request(`/api/v1/activity${qs(q)}`),
   dashboard: () => request("/api/v1/dashboard/summary"),
+
+  intelligenceProviders: () => request("/api/v1/intelligence/providers"),
+  startAnalysis: (cid, b) => request(`/api/v1/clients/${cid}/intelligence/analyses`, { method: "POST", body: json(b || {}) }),
+  listAnalyses: (cid) => request(`/api/v1/clients/${cid}/intelligence/analyses`),
+  retryAnalysis: (id) => request(`/api/v1/intelligence/analyses/${id}/retry`, { method: "POST" }),
+  cancelAnalysis: (id) => request(`/api/v1/intelligence/analyses/${id}/cancel`, { method: "POST" }),
+  intelligenceSummary: (cid) => request(`/api/v1/clients/${cid}/intelligence`),
+  listFindings: (cid, type, q) => request(`/api/v1/clients/${cid}/intelligence/findings/${type}${qs(q)}`),
+  createFinding: (cid, type, b) => request(`/api/v1/clients/${cid}/intelligence/findings/${type}`, { method: "POST", body: json(b) }),
+  editFinding: (type, id, data) => request(`/api/v1/intelligence/findings/${type}/${id}`, { method: "PATCH", body: json({ data }) }),
+  reviewFinding: (type, id, action, note) => request(`/api/v1/intelligence/findings/${type}/${id}/review`, { method: "POST", body: json({ action, note: note || null }) }),
+  deleteFinding: (type, id) => request(`/api/v1/intelligence/findings/${type}/${id}`, { method: "DELETE" }),
+  reportMarkdown: async (cid) => {
+    const res = await fetch(`${BASE}/api/v1/clients/${cid}/intelligence/report.md`, { headers: { Authorization: `Bearer ${tokenStore.get()}` } });
+    if (!res.ok) throw new ApiError(res.status, "Could not build the report");
+    return res.text();
+  },
 };

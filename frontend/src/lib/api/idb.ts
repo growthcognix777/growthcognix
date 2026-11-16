@@ -1,13 +1,13 @@
 // Minimal promise wrapper over IndexedDB for the browser sandbox driver.
 const DB_NAME = "growthcognix-sandbox";
-const STORES = ["tenants", "users", "clients", "products", "documents", "blobs", "jobs", "activity", "sessions"] as const;
+const STORES = ["tenants", "users", "clients", "products", "documents", "blobs", "jobs", "activity", "sessions", "findings"] as const;
 export type Store = (typeof STORES)[number];
 
 let dbp: Promise<IDBDatabase> | null = null;
 function open(): Promise<IDBDatabase> {
   if (dbp) return dbp;
   dbp = new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
+    const req = indexedDB.open(DB_NAME, 2);
     req.onupgradeneeded = () => STORES.forEach((s) => { if (!req.result.objectStoreNames.contains(s)) req.result.createObjectStore(s, { keyPath: "id" }); });
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);

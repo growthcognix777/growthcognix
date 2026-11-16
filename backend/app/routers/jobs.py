@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 
 from app.deps import Ctx, get_ctx
-from app.models import Client, ResearchJob
+from app.models import AnalysisJob, Client, ResearchJob
+from app.services.ai.providers import ProviderNotConfigured, get_provider
 from app.schemas import JobCreate, JobOut, Page
 from app.services.activity import log
 from app.services.agents import AGENTS
@@ -65,11 +66,23 @@ def cancel_job(job_id: str, ctx: Ctx = Depends(get_ctx)):
 
 @agents_router.get("")
 def list_agents(ctx: Ctx = Depends(get_ctx)):
+    try:
+        get_provider("analysis")
+        ai_ready = True
+    except ProviderNotConfigured:
+        ai_ready = False
     out = []
     for a in AGENTS:
-        jobs = scoped(ctx, ResearchJob).where(ResearchJob.agent_key == a["key"])
+        if a["key"] == "business_analyst":  # Phase 2: runs as the Client Intelligence analysis
+            jobs = scoped(ctx, AnalysisJob)
+            order = AnalysisJob.created_at.desc()
+            status = "active" if ai_ready else "needs_setup"
+        else:
+            jobs = scoped(ctx, ResearchJob).where(ResearchJob.agent_key == a["key"])
+            order = ResearchJob.created_at.desc()
+            status = "planned"
         total = ctx.db.scalar(select(func.count()).select_from(jobs.subquery())) or 0
-        last = ctx.db.scalar(jobs.order_by(ResearchJob.created_at.desc()).limit(1))
-        out.append({**a, "status": "planned", "total_jobs": total,
+        last = ctx.db.scalar(jobs.order_by(order).limit(1))
+        out.append({**a, "status": status, "total_jobs": total,
                     "last_job_at": last.created_at if last else None})
     return out

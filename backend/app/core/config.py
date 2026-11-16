@@ -18,6 +18,22 @@ class Settings(BaseSettings):
     upload_dir: str = "/data/uploads"
     max_upload_mb: int = 20
 
+    # ---- Phase 2: AI providers (free tiers; keys live only in server env) ----
+    # Which provider handles long business/document analysis and which handles fast short calls.
+    ai_analysis_provider: str = "gemini"  # gemini | groq | none
+    ai_fast_provider: str = "groq"  # gemini | groq | none
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash"
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    ai_timeout_seconds: int = 90
+    # Run analysis jobs in-process instead of on the Redis worker (dev/tests only).
+    analysis_inline: bool = False
+    # Website analysis limits
+    website_max_pages: int = 5
+    website_max_bytes: int = 2_000_000
+    website_allow_private: bool = False  # SSRF guard; never enable in production
+
     @property
     def cors_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

@@ -6,6 +6,7 @@ import { Suspense, useState } from "react";
 import { DocumentTable, Uploader } from "@/components/Documents";
 import { ClientIntelligence } from "@/components/Intelligence";
 import { WebIntel } from "@/components/WebIntel";
+import { BuyerDiscovery } from "@/components/Leads";
 import { AddProductButton, ProductCards, ProductModal } from "@/components/Products";
 import { Badge, Button, ButtonLink, Card, CardHeader, ErrorBox, Skeleton, Spinner, cx } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -14,11 +15,11 @@ import { fmtDate, fmtMoney, timeAgo } from "@/lib/format";
 import type { Product } from "@/lib/types";
 import { useAsync } from "@/lib/useAsync";
 
-const TABS = ["Overview", "Products & services", "Documents", "Intelligence", "Website & competitors", "Activity"] as const;
+const TABS = ["Overview", "Products & services", "Documents", "Intelligence", "Website & competitors", "Buyer discovery", "Activity"] as const;
 
 function Detail() {
-  const id = useSearchParams().get("id") || ""; const router = useRouter(); const { session } = useAuth();
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
+  const params = useSearchParams(); const id = params.get("id") || ""; const router = useRouter(); const { session } = useAuth();
+  const [tab, setTab] = useState<(typeof TABS)[number]>(params.get("tab") === "buyers" ? "Buyer discovery" : "Overview");
   const [modal, setModal] = useState<{ open: boolean; product: Product | null }>({ open: false, product: null });
   const client = useAsync(() => api.getClient(id), [id]);
   const products = useAsync(() => api.listProducts({ client_id: id }), [id]);
@@ -100,6 +101,7 @@ function Detail() {
       )}
 
       {tab === "Website & competitors" && <WebIntel clientId={c.id} clientName={c.company_name} clientWebsite={c.website || null} archived={!!c.archived_at} />}
+      {tab === "Buyer discovery" && <BuyerDiscovery clientId={c.id} clientName={c.company_name} archived={!!c.archived_at} />}
 
       {tab === "Activity" && (
         <Card><CardHeader title="Client activity" />

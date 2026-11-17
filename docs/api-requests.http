@@ -185,3 +185,62 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {"action": "approve"}
+
+
+### ---------------- Phase 4: buyer discovery & lead intelligence
+GET {{base}}/api/v1/leads/providers
+Authorization: Bearer {{token}}
+
+### Save a research area (country, then state/district/city/industrial_area with parent_id)
+POST {{base}}/api/v1/clients/{{client_id}}/leads/geographies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"level": "country", "name": "India"}
+
+### Generate buyer-profile hypotheses (needs GEMINI_API_KEY or GROQ_API_KEY)
+POST {{base}}/api/v1/clients/{{client_id}}/leads/buyer-profiles/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"buyer_types": ["end_user", "distributor"]}
+
+### Create a campaign (approved profiles only)
+POST {{base}}/api/v1/clients/{{client_id}}/leads/campaigns
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name": "Belagavi dairies", "persona_ids": ["{{persona_id}}"], "geography_ids": ["{{geo_id}}"], "sources": ["searxng"]}
+
+### Start / resume, pause, cancel
+POST {{base}}/api/v1/leads/campaigns/{{campaign_id}}/start
+Authorization: Bearer {{token}}
+
+### Prospects with filters
+GET {{base}}/api/v1/clients/{{client_id}}/leads/prospects?district=Belagavi&min_score=40&sort=score
+Authorization: Bearer {{token}}
+
+### Verify a field (note or source URL required)
+POST {{base}}/api/v1/leads/prospects/{{prospect_id}}/verify
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"field": "company", "decision": "verified", "note": "CIN checked", "source_url": "https://www.mca.gov.in/"}
+
+### Approve, export, hand off
+POST {{base}}/api/v1/clients/{{client_id}}/leads/approve
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"prospect_ids": ["{{prospect_id}}"], "approved": true}
+
+###
+GET {{base}}/api/v1/clients/{{client_id}}/leads/export?format=xlsx
+Authorization: Bearer {{token}}
+
+### UN Comtrade (historical trade, public preview)
+POST {{base}}/api/v1/clients/{{client_id}}/leads/market-insights/comtrade
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"hs_code": "8413", "reporter": "India", "period": "2023", "flow": "M"}

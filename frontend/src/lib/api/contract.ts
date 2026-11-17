@@ -3,7 +3,13 @@ import type {
   ResearchJob, Role, Session, Tenant, User, Analysis, Finding, FindingType, IntelligenceProviders,
   IntelligenceSummary, VerificationStatus, ClientWebsite, Competitor, CompetitorChange, CompetitorInput, CompetitorProfile,
   ComparisonRow, CrawlConfig, CrawlJob, CrawledPage, CrawlerStatus, Opportunity, SEOFinding, Topic, WebsiteAudit, WebsiteRec,
+  BuyerType, DiscoveryCampaign, DiscoveryTarget, GeoArea, GeoLevel, GeoReference, LeadProviders, LeadSummary, MarketInsight,
+  BusinessContact, Prospect, ProspectDetail, ProspectInput, ProspectQuery, Suppression, LeadScore,
 } from "../types";
+
+export interface CampaignInput { name: string; persona_ids: string[]; geography_ids: string[]; sources: string[]; directory_urls?: string[]; results_per_query?: number; max_companies?: number; weights?: Record<string, number> | null; }
+export type ProspectPatch = Partial<Pick<Prospect, "name" | "legal_name" | "buyer_type" | "industry" | "sub_industry" | "company_category" | "country" | "state" | "district" | "city" | "industrial_area" | "qualification_reason">>;
+export interface VerifyInput { field: "company" | "website" | "industry" | "product_relevance" | "contact" | "status"; decision: "verified" | "rejected" | "needs_review"; note?: string | null; source_url?: string | null; }
 
 /** One contract, two drivers: HttpDriver (FastAPI) and LocalDriver (browser sandbox for GitHub Pages). */
 export interface DataDriver {
@@ -92,4 +98,47 @@ export interface DataDriver {
   reviewOpportunity(id: string, action: "approve" | "reject" | "needs_review", note?: string | null): Promise<Opportunity>;
   editOpportunity(id: string, b: Partial<Pick<Opportunity, "title" | "description" | "priority" | "next_action">>): Promise<Opportunity>;
   deleteOpportunity(id: string): Promise<void>;
+
+  // Phase 4 — Buyer discovery & lead intelligence. Searching, site checks, AI profiles and UN Comtrade run only on the backend.
+  leadProviders(): Promise<LeadProviders>;
+  geoReference(): Promise<GeoReference>;
+  listBuyerProfiles(clientId: string): Promise<Finding[]>;
+  generateBuyerProfiles(clientId: string, b: { product_ids?: string[]; buyer_types?: BuyerType[]; geography?: string[] }): Promise<{ created: number }>;
+  listGeos(clientId: string): Promise<GeoArea[]>;
+  addGeo(clientId: string, b: { level: GeoLevel; name: string; parent_id?: string | null; code?: string | null; notes?: string | null; source_url?: string | null }): Promise<GeoArea>;
+  deleteGeo(id: string): Promise<void>;
+  listLeadCampaigns(clientId: string): Promise<DiscoveryCampaign[]>;
+  createLeadCampaign(clientId: string, b: CampaignInput): Promise<DiscoveryCampaign>;
+  getLeadCampaign(id: string): Promise<DiscoveryCampaign>;
+  leadCampaignTargets(id: string): Promise<DiscoveryTarget[]>;
+  startLeadCampaign(id: string): Promise<DiscoveryCampaign>;
+  pauseLeadCampaign(id: string): Promise<DiscoveryCampaign>;
+  cancelLeadCampaign(id: string): Promise<DiscoveryCampaign>;
+  listProspects(clientId: string, q?: ProspectQuery): Promise<Page<Prospect>>;
+  addProspect(clientId: string, b: ProspectInput): Promise<Prospect>;
+  getProspect(id: string): Promise<ProspectDetail>;
+  editProspect(id: string, b: ProspectPatch): Promise<Prospect>;
+  deleteProspect(id: string): Promise<void>;
+  verifyProspect(id: string, b: VerifyInput): Promise<Prospect>;
+  reopenProspect(id: string): Promise<Prospect>;
+  addProspectEvidence(id: string, b: { field: string; source_url: string; excerpt: string }): Promise<ProspectDetail>;
+  addProspectContact(id: string, b: { kind: "role_email" | "phone" | "person"; value?: string | null; person_name?: string | null; role?: string | null; source_url: string; purpose?: string | null }): Promise<BusinessContact>;
+  verifyContact(id: string, verified: boolean): Promise<BusinessContact>;
+  deleteContact(id: string): Promise<void>;
+  checkProspectSite(id: string): Promise<ProspectDetail>;
+  scoreHistory(id: string): Promise<LeadScore[]>;
+  rescoreLeads(clientId: string, b: { weights?: Record<string, number> | null; prospect_ids?: string[] }): Promise<{ rescored: number; weights: Record<string, number> }>;
+  assignLeads(clientId: string, b: { prospect_ids: string[]; user_id: string | null; note?: string | null }): Promise<{ updated: number }>;
+  approveLeads(clientId: string, b: { prospect_ids: string[]; approved: boolean }): Promise<{ updated: number; blocked: string[] }>;
+  exportLeads(clientId: string, format: "csv" | "xlsx"): Promise<Blob>;
+  crmHandoff(clientId: string, prospect_ids: string[]): Promise<{ handed_off: number; skipped: string[] }>;
+  leadSummary(clientId: string): Promise<LeadSummary>;
+  verificationQueue(clientId: string): Promise<Prospect[]>;
+  listSuppression(): Promise<Suppression[]>;
+  addSuppression(b: { kind: "domain" | "email" | "phone"; value: string; reason?: string | null }): Promise<Suppression>;
+  deleteSuppression(id: string): Promise<void>;
+  listMarketInsights(clientId: string, kind?: string): Promise<MarketInsight[]>;
+  fetchComtrade(clientId: string, b: { hs_code: string; reporter: string; period: string; flow: "M" | "X"; partner?: string | null; product_id?: string | null }): Promise<MarketInsight[]>;
+  addMarketInsight(clientId: string, b: { kind: string; title: string; detail?: string | null; source_url: string; product_id?: string | null; hs_code?: string | null; reporter?: string | null }): Promise<MarketInsight>;
+  deleteMarketInsight(id: string): Promise<void>;
 }

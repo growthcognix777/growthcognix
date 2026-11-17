@@ -8,7 +8,10 @@ export const FIELDS: Record<FindingType, Record<string, Kind>> = {
     businesses_needing: "list", buyer_categories: "list", pain_points: "list", purchase_reasons: "list", substitutes: "list" },
   market: { product_id: "str", scope: "str", name: "str", parent: "str", rationale: "str", priority: "str" },
   persona: { product_id: "str", name: "str", buyer_category: "str", industry: "str", company_size: "str", job_titles: "list",
-    departments: "list", pain_points: "list", purchase_reasons: "list", description: "str" },
+    departments: "list", pain_points: "list", purchase_reasons: "list", description: "str",
+    // Phase 4 buyer-profile fields
+    buyer_type: "str", industry_relation: "str", application_categories: "list", company_types: "list",
+    problems_solved: "list", substitutes: "list", geography: "list", rationale: "str" },
   insight: { product_id: "str", category: "str", field: "str", title: "str", detail: "str" },
 };
 export const REQUIRED: Record<FindingType, string[]> = {
@@ -16,6 +19,8 @@ export const REQUIRED: Record<FindingType, string[]> = {
 };
 export const ENUMS: Record<string, string[]> = {
   application_type: ["direct", "indirect"],
+  buyer_type: ["end_user", "distributor", "importer", "dealer", "oem", "institutional", "project"],
+  industry_relation: ["direct", "indirect"],
   scope: ["india", "state", "district_city", "country", "export_market"],
   priority: ["high", "medium", "low"],
   category: ["product_fact", "advantage", "differentiation", "industry_usage", "opportunity", "risk", "gap"],

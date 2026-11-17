@@ -2,8 +2,8 @@
  "openapi": "3.1.0",
  "info": {
   "title": "GrowthCognix API",
-  "description": "GrowthCognix \u2014 multi-tenant growth intelligence platform (Phase 1 foundation + Phase 2 client intelligence engine + Phase 3 website audit & competitor intelligence).",
-  "version": "3.0.0-phase3"
+  "description": "GrowthCognix \u2014 multi-tenant growth intelligence platform (Phase 1 foundation + Phase 2 client intelligence engine + Phase 3 website audit & competitor intelligence + Phase 4 buyer discovery & lead intelligence).",
+  "version": "4.0.0-phase4"
  },
  "paths": {
   "/api/v1/auth/register": {
@@ -4291,6 +4291,2266 @@
     }
    }
   },
+  "/api/v1/leads/providers": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Provider Status",
+    "operationId": "provider_status_api_v1_leads_providers_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/leads/geo/reference": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Geo Reference",
+    "operationId": "geo_reference_api_v1_leads_geo_reference_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/buyer-profiles": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "List Profiles",
+    "operationId": "list_profiles_api_v1_clients__client_id__leads_buyer_profiles_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/buyer-profiles/generate": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Generate Profiles",
+    "operationId": "generate_profiles_api_v1_clients__client_id__leads_buyer_profiles_generate_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProfileGen"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/geographies": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "List Geos",
+    "operationId": "list_geos_api_v1_clients__client_id__leads_geographies_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Add Geo",
+    "operationId": "add_geo_api_v1_clients__client_id__leads_geographies_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GeoIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/geographies/{geo_id}": {
+   "delete": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Delete Geo",
+    "operationId": "delete_geo_api_v1_leads_geographies__geo_id__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "geo_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Geo Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/campaigns": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "List Campaigns",
+    "operationId": "list_campaigns_api_v1_clients__client_id__leads_campaigns_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Create Campaign",
+    "operationId": "create_campaign_api_v1_clients__client_id__leads_campaigns_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CampaignIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/campaigns/{campaign_id}": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Get Campaign",
+    "operationId": "get_campaign_api_v1_leads_campaigns__campaign_id__get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "campaign_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Campaign Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/campaigns/{campaign_id}/targets": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Campaign Targets",
+    "operationId": "campaign_targets_api_v1_leads_campaigns__campaign_id__targets_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "campaign_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Campaign Id"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/campaigns/{campaign_id}/start": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Start Campaign",
+    "description": "Start or resume. Done targets are skipped; failed ones are retried.",
+    "operationId": "start_campaign_api_v1_leads_campaigns__campaign_id__start_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "campaign_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Campaign Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/campaigns/{campaign_id}/pause": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Pause Campaign",
+    "operationId": "pause_campaign_api_v1_leads_campaigns__campaign_id__pause_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "campaign_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Campaign Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/campaigns/{campaign_id}/cancel": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Cancel Campaign",
+    "operationId": "cancel_campaign_api_v1_leads_campaigns__campaign_id__cancel_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "campaign_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Campaign Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/prospects": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "List Prospects",
+    "operationId": "list_prospects_api_v1_clients__client_id__leads_prospects_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Q"
+      }
+     },
+     {
+      "name": "country",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Country"
+      }
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "State"
+      }
+     },
+     {
+      "name": "district",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "District"
+      }
+     },
+     {
+      "name": "city",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "City"
+      }
+     },
+     {
+      "name": "industry",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Industry"
+      }
+     },
+     {
+      "name": "product_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Product Id"
+      }
+     },
+     {
+      "name": "buyer_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Buyer Type"
+      }
+     },
+     {
+      "name": "score_class",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Score Class"
+      }
+     },
+     {
+      "name": "min_score",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 100,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Min Score"
+      }
+     },
+     {
+      "name": "verification",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Verification"
+      }
+     },
+     {
+      "name": "source",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Source"
+      }
+     },
+     {
+      "name": "campaign_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Campaign Id"
+      }
+     },
+     {
+      "name": "assigned_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Assigned To"
+      }
+     },
+     {
+      "name": "crm_status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Crm Status"
+      }
+     },
+     {
+      "name": "include_rejected",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Include Rejected"
+      }
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "score",
+        "recent",
+        "name"
+       ],
+       "type": "string",
+       "default": "score",
+       "title": "Sort"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 100,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Add Prospect",
+    "operationId": "add_prospect_api_v1_clients__client_id__leads_prospects_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProspectIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Prospect Detail",
+    "operationId": "prospect_detail_api_v1_leads_prospects__prospect_id__get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Edit Prospect",
+    "operationId": "edit_prospect_api_v1_leads_prospects__prospect_id__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProspectPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Delete Prospect",
+    "operationId": "delete_prospect_api_v1_leads_prospects__prospect_id__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}/verify": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Verify Prospect",
+    "operationId": "verify_prospect_api_v1_leads_prospects__prospect_id__verify_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/VerifyIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}/reopen": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Reopen Prospect",
+    "operationId": "reopen_prospect_api_v1_leads_prospects__prospect_id__reopen_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}/evidence": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Add Evidence",
+    "operationId": "add_evidence_api_v1_leads_prospects__prospect_id__evidence_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EvidenceIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}/contacts": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Add Contact",
+    "operationId": "add_contact_api_v1_leads_prospects__prospect_id__contacts_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ContactIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/contacts/{contact_id}/verify": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Verify Contact",
+    "operationId": "verify_contact_api_v1_leads_contacts__contact_id__verify_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "contact_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Contact Id"
+      }
+     },
+     {
+      "name": "verified",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": true,
+       "title": "Verified"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/contacts/{contact_id}": {
+   "delete": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Delete Contact",
+    "operationId": "delete_contact_api_v1_leads_contacts__contact_id__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "contact_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Contact Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}/check-site": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Check Site",
+    "description": "Fetch the prospect's own site now (up to DISCOVERY_VERIFY_PAGES pages, robots-aware).",
+    "operationId": "check_site_api_v1_leads_prospects__prospect_id__check_site_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/rescore": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Rescore All",
+    "operationId": "rescore_all_api_v1_clients__client_id__leads_rescore_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ScoreIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/prospects/{prospect_id}/scores": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Score History",
+    "operationId": "score_history_api_v1_leads_prospects__prospect_id__scores_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "prospect_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Prospect Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/assign": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Assign",
+    "operationId": "assign_api_v1_clients__client_id__leads_assign_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AssignIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/approve": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Approve",
+    "operationId": "approve_api_v1_clients__client_id__leads_approve_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApproveIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/export": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Export",
+    "description": "Approved prospects only, without suppressed contacts.",
+    "operationId": "export_api_v1_clients__client_id__leads_export_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "csv",
+        "xlsx"
+       ],
+       "type": "string",
+       "default": "csv",
+       "title": "Format"
+      }
+     },
+     {
+      "name": "ids",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Ids"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/crm-handoff": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Crm Handoff",
+    "description": "Marks approved prospects as handed off to the CRM. The Phase 6 CRM reads handed-off prospects; nothing is\ncontacted here.",
+    "operationId": "crm_handoff_api_v1_clients__client_id__leads_crm_handoff_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/HandoffIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/summary": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Summary",
+    "operationId": "summary_api_v1_clients__client_id__leads_summary_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/verification-queue": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Verification Queue",
+    "operationId": "verification_queue_api_v1_clients__client_id__leads_verification_queue_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 100,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/suppression": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "List Suppression",
+    "operationId": "list_suppression_api_v1_leads_suppression_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Add Suppression",
+    "operationId": "add_suppression_api_v1_leads_suppression_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SuppressIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/leads/suppression/{entry_id}": {
+   "delete": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Delete Suppression",
+    "operationId": "delete_suppression_api_v1_leads_suppression__entry_id__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "entry_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Entry Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/market-insights": {
+   "get": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "List Insights",
+    "operationId": "list_insights_api_v1_clients__client_id__leads_market_insights_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Kind"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Add Insight",
+    "operationId": "add_insight_api_v1_clients__client_id__leads_market_insights_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InsightIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/leads/market-insights/comtrade": {
+   "post": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Fetch Comtrade",
+    "operationId": "fetch_comtrade_api_v1_clients__client_id__leads_market_insights_comtrade_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ComtradeIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/leads/market-insights/{insight_id}": {
+   "delete": {
+    "tags": [
+     "buyer discovery & lead intelligence"
+    ],
+    "summary": "Delete Insight",
+    "operationId": "delete_insight_api_v1_leads_market_insights__insight_id__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "insight_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Insight Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/health": {
    "get": {
     "tags": [
@@ -4543,6 +6803,70 @@
     "type": "object",
     "title": "AnalysisStart"
    },
+   "ApproveIn": {
+    "properties": {
+     "prospect_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Prospect Ids"
+     },
+     "approved": {
+      "type": "boolean",
+      "title": "Approved",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "prospect_ids"
+    ],
+    "title": "ApproveIn"
+   },
+   "AssignIn": {
+    "properties": {
+     "prospect_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Prospect Ids"
+     },
+     "user_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "User Id"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "prospect_ids"
+    ],
+    "title": "AssignIn"
+   },
    "Body_upload_document_api_v1_documents_post": {
     "properties": {
      "file": {
@@ -4572,6 +6896,85 @@
      "client_id"
     ],
     "title": "Body_upload_document_api_v1_documents_post"
+   },
+   "CampaignIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "persona_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 30,
+      "minItems": 1,
+      "title": "Persona Ids"
+     },
+     "geography_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 50,
+      "title": "Geography Ids"
+     },
+     "sources": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 5,
+      "minItems": 1,
+      "title": "Sources"
+     },
+     "directory_urls": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 20,
+      "title": "Directory Urls"
+     },
+     "results_per_query": {
+      "type": "integer",
+      "maximum": 20.0,
+      "minimum": 1.0,
+      "title": "Results Per Query",
+      "default": 10
+     },
+     "max_companies": {
+      "type": "integer",
+      "maximum": 1000.0,
+      "minimum": 1.0,
+      "title": "Max Companies",
+      "default": 200
+     },
+     "weights": {
+      "anyOf": [
+       {
+        "additionalProperties": {
+         "type": "integer"
+        },
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weights"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "persona_ids",
+     "sources"
+    ],
+    "title": "CampaignIn"
    },
    "ClientCreate": {
     "properties": {
@@ -5333,6 +7736,142 @@
     "type": "object",
     "title": "CompetitorPatch"
    },
+   "ComtradeIn": {
+    "properties": {
+     "hs_code": {
+      "type": "string",
+      "maxLength": 6,
+      "minLength": 2,
+      "title": "Hs Code"
+     },
+     "reporter": {
+      "type": "string",
+      "maxLength": 60,
+      "minLength": 2,
+      "title": "Reporter",
+      "description": "Country that reports the trade (name, ISO code or Comtrade code)"
+     },
+     "period": {
+      "type": "string",
+      "maxLength": 4,
+      "minLength": 4,
+      "title": "Period"
+     },
+     "flow": {
+      "type": "string",
+      "enum": [
+       "M",
+       "X"
+      ],
+      "title": "Flow",
+      "default": "M"
+     },
+     "partner": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 60
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Partner"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "hs_code",
+     "reporter",
+     "period"
+    ],
+    "title": "ComtradeIn"
+   },
+   "ContactIn": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "role_email",
+       "phone",
+       "person"
+      ],
+      "title": "Kind"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     },
+     "person_name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Person Name"
+     },
+     "role": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Role"
+     },
+     "source_url": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 8,
+      "title": "Source Url",
+      "description": "Public page where this business contact is published"
+     },
+     "purpose": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Purpose"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "source_url"
+    ],
+    "title": "ContactIn"
+   },
    "DocumentOut": {
     "properties": {
      "id": {
@@ -5394,6 +7933,43 @@
     ],
     "title": "DocumentOut"
    },
+   "EvidenceIn": {
+    "properties": {
+     "field": {
+      "type": "string",
+      "enum": [
+       "fit",
+       "need",
+       "intent",
+       "capacity",
+       "company",
+       "industry",
+       "location",
+       "other"
+      ],
+      "title": "Field"
+     },
+     "source_url": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 8,
+      "title": "Source Url"
+     },
+     "excerpt": {
+      "type": "string",
+      "maxLength": 1000,
+      "minLength": 3,
+      "title": "Excerpt"
+     }
+    },
+    "type": "object",
+    "required": [
+     "field",
+     "source_url",
+     "excerpt"
+    ],
+    "title": "EvidenceIn"
+   },
    "FindingIn": {
     "properties": {
      "data": {
@@ -5432,6 +8008,81 @@
     ],
     "title": "FindingPatch"
    },
+   "GeoIn": {
+    "properties": {
+     "level": {
+      "type": "string",
+      "enum": [
+       "global",
+       "country",
+       "state",
+       "district",
+       "city",
+       "industrial_area"
+      ],
+      "title": "Level"
+     },
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "parent_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parent Id"
+     },
+     "code": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 20
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     },
+     "notes": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
+     },
+     "source_url": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "level",
+     "name"
+    ],
+    "title": "GeoIn"
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -5444,6 +8095,107 @@
     },
     "type": "object",
     "title": "HTTPValidationError"
+   },
+   "HandoffIn": {
+    "properties": {
+     "prospect_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Prospect Ids"
+     }
+    },
+    "type": "object",
+    "required": [
+     "prospect_ids"
+    ],
+    "title": "HandoffIn"
+   },
+   "InsightIn": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "current_demand",
+       "tariff",
+       "certification",
+       "regulation",
+       "logistics",
+       "trade_agreement",
+       "hs_code"
+      ],
+      "title": "Kind"
+     },
+     "title": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 3,
+      "title": "Title"
+     },
+     "detail": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 4000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Detail"
+     },
+     "source_url": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 8,
+      "title": "Source Url"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "hs_code": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 12
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hs Code"
+     },
+     "reporter": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reporter"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "title",
+     "source_url"
+    ],
+    "title": "InsightIn"
    },
    "JobCreate": {
     "properties": {
@@ -6207,6 +8959,354 @@
     "type": "object",
     "title": "ProductUpdate"
    },
+   "ProfileGen": {
+    "properties": {
+     "product_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 50,
+      "title": "Product Ids"
+     },
+     "buyer_types": {
+      "items": {
+       "type": "string",
+       "enum": [
+        "end_user",
+        "distributor",
+        "importer",
+        "dealer",
+        "oem",
+        "institutional",
+        "project"
+       ]
+      },
+      "type": "array",
+      "title": "Buyer Types"
+     },
+     "geography": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 20,
+      "title": "Geography"
+     }
+    },
+    "type": "object",
+    "title": "ProfileGen"
+   },
+   "ProspectIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "website": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Website"
+     },
+     "source_url": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 8,
+      "title": "Source Url",
+      "description": "Where the team found this company"
+     },
+     "buyer_type": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "end_user",
+         "distributor",
+         "importer",
+         "dealer",
+         "oem",
+         "institutional",
+         "project"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Type"
+     },
+     "industry": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Industry"
+     },
+     "company_category": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Company Category"
+     },
+     "country": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Country"
+     },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     },
+     "city": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "City"
+     },
+     "industrial_area": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Industrial Area"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "source_url"
+    ],
+    "title": "ProspectIn"
+   },
+   "ProspectPatch": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300,
+        "minLength": 2
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "legal_name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Legal Name"
+     },
+     "buyer_type": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "end_user",
+         "distributor",
+         "importer",
+         "dealer",
+         "oem",
+         "institutional",
+         "project"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Type"
+     },
+     "industry": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Industry"
+     },
+     "sub_industry": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sub Industry"
+     },
+     "company_category": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Company Category"
+     },
+     "country": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Country"
+     },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State"
+     },
+     "district": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "District"
+     },
+     "city": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "City"
+     },
+     "industrial_area": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Industrial Area"
+     },
+     "qualification_reason": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Qualification Reason"
+     }
+    },
+    "type": "object",
+    "title": "ProspectPatch"
+   },
    "RegisterIn": {
     "properties": {
      "agency_name": {
@@ -6272,6 +9372,34 @@
     ],
     "title": "ReviewIn"
    },
+   "ScoreIn": {
+    "properties": {
+     "weights": {
+      "anyOf": [
+       {
+        "additionalProperties": {
+         "type": "integer"
+        },
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weights"
+     },
+     "prospect_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 5000,
+      "title": "Prospect Ids"
+     }
+    },
+    "type": "object",
+    "title": "ScoreIn"
+   },
    "StartAudit": {
     "properties": {
      "crawl_config": {
@@ -6288,6 +9416,43 @@
     },
     "type": "object",
     "title": "StartAudit"
+   },
+   "SuppressIn": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "domain",
+       "email",
+       "phone"
+      ],
+      "title": "Kind"
+     },
+     "value": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 3,
+      "title": "Value"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "value"
+    ],
+    "title": "SuppressIn"
    },
    "TenantOut": {
     "properties": {
@@ -6562,6 +9727,61 @@
      "type"
     ],
     "title": "ValidationError"
+   },
+   "VerifyIn": {
+    "properties": {
+     "field": {
+      "type": "string",
+      "enum": [
+       "company",
+       "website",
+       "industry",
+       "product_relevance",
+       "contact",
+       "status"
+      ],
+      "title": "Field"
+     },
+     "decision": {
+      "type": "string",
+      "enum": [
+       "verified",
+       "rejected",
+       "needs_review"
+      ],
+      "title": "Decision"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     },
+     "source_url": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "field",
+     "decision"
+    ],
+    "title": "VerifyIn"
    },
    "WebsiteIn": {
     "properties": {

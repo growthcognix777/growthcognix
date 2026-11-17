@@ -7,7 +7,7 @@ A multi-tenant AI business growth and marketing intelligence platform for digita
 
 **Live preview:** https://growthcognix777.github.io/growthcognix/ — runs in *browser sandbox* mode (see below).
 
-> Status: **Phase 1 — Foundation** (this release). Local development foundation, not a production SaaS release.
+> Status: **Phase 4 — Global Buyer Discovery & Lead Intelligence** (this release). Local development build, not a production SaaS release.
 
 ## Roadmap (7 phases)
 
@@ -15,8 +15,8 @@ A multi-tenant AI business growth and marketing intelligence platform for digita
 |---|---|---|
 | 1 | Foundation: auth, agency dashboard, clients, products, documents, agent centre, research jobs, activity log | ✅ Released |
 | 2 | Client Intelligence Engine (document extraction, business profiles, applications, personas, markets, evidence & review) | ✅ Released |
-| 3 | Website Audit & Competitor Intelligence (native crawler or Firecrawl, PageSpeed, monitoring, opportunities) | ✅ This release |
-| 4 | Global Buyer Discovery & Lead Intelligence (India + export markets, 100-pt lead score) | Planned |
+| 3 | Website Audit & Competitor Intelligence (native crawler or Firecrawl, PageSpeed, monitoring, opportunities) | ✅ Released |
+| 4 | Global Buyer Discovery & Lead Intelligence (India + export markets, 100-pt lead score) | ✅ This release |
 | 5 | AI Marketing Strategy & Campaign Automation (human approval before publishing/spend) | Planned |
 | 6 | CRM, Sales & Outreach (pipeline, Gmail/Outlook, WhatsApp Business, quotations) | Planned |
 | 7 | Customer Success & Business Growth Intelligence | Planned |
@@ -138,6 +138,28 @@ API collection: `docs/api-requests.http` · OpenAPI spec: `docs/openapi.json` ·
 - PageSpeed needs a free Google API key and measures the home page only.
 - Location and certification detection uses pattern lists; unusual names may be missed.
 - Same DNS-rebinding caveat as Phase 2: block private egress at the network level in production.
+
+## Phase 4: Global Buyer Discovery & Lead Intelligence
+
+- **Tables (migration `0004`):** geographic_areas, discovery_campaigns, discovery_targets, prospect_companies, prospect_product_fits, business_contacts, lead_scores, lead_verifications, lead_assignments, trade_market_insights, suppression_entries. Buyer profiles extend the Phase 2 `buyer_personas` table (buyer type, direct/indirect industry, applications, company types, problems solved, substitutes, geography, rationale). Lead evidence reuses `evidence_sources` (now with field, provider, observed_at).
+- **Buyer profiles:** add by hand, or generate with Gemini/Groq from the client's products, documents and Phase 2 applications. AI profiles are hypotheses until a manager approves them; campaigns only use approved or team-added profiles.
+- **Research areas:** Global > Country > State > District > City > Industrial area. Countries and Indian states/UTs are validated against official names; districts, cities and clusters are added by the team (optionally with the source list URL). Nothing else is pre-filled.
+- **Discovery campaigns (RQ worker):** profile × area × source searches. Sources: SearXNG (self-hosted, free), Google Programmable Search (~100 free queries/day), Brave Search API (metered, $5/month credit, card required), and public directory/association pages you supply (robots-aware). Daily limits per source, retry with backoff, pause/resume/cancel, idempotent resume, per-target progress. Bing (retired Aug 2025), IndiaMART/TradeIndia (terms), GeM, MCA and ITC Trade Map are manual-only and listed as such.
+- **Prospects:** deduplicated by normalised domain; marketplace/social/listing sites, the client's own site, its competitors and do-not-contact domains are skipped. A search hit only makes a company `discovered`; the worker then reads up to 3 pages of its own site (robots-aware, SSRF-guarded) and records application/industry terms, buying signals (tenders, RFQs, procurement notices, explicit supplier requests, expansion), capacity signals, places named and published role contacts, each with page URL and excerpt. Personal email addresses are never collected.
+- **Verification:** discovered → company → website → industry → product relevance → contact verified, plus needs review / rejected. Only "website" can be set by the system (it fetched the site); every other field needs a person with a note or source URL, and every decision is logged.
+- **Lead score (0–100):** fit 30, need 25, intent & timing 20, capacity 15, contact 10 (weights editable, must total 100). Classes: very high 80+, high 65+, medium 40+, low. Search appearance earns nothing; intent is 0 without real evidence. A separate confidence score reflects verification depth and freshness (reduced after 180 days, zero when rejected). Every point has a written reason; history is kept.
+- **Assignment, approval, export, CRM:** assign prospects to team members; approve only after a person verified the company; export approved prospects as CSV or Excel (formula-injection guarded, suppressed contacts removed); hand approved prospects to the CRM (Phase 6 reads them). Nothing contacts anyone.
+- **Trade data:** UN Comtrade public preview (no key, 500 rows per call) stored as *historical trade*, never as current demand or obtainable revenue; manual insights for tariffs, certifications, regulations, logistics, trade agreements and demand signals, each with a source URL.
+- **UI:** client → Buyer discovery with 12 screens: overview, buyer profiles, market explorer, India districts & clusters, international markets, campaigns, prospect database, prospect detail & evidence, lead scoring, verification queue, assignment, export & CRM. The sidebar "Buyer discovery" page lists every client's numbers.
+
+### Honest limitations (Phase 4)
+
+- Discovery needs the backend and at least one configured search source (`SEARXNG_URL`, `GOOGLE_PSE_KEY` + `GOOGLE_PSE_CX`, or `BRAVE_API_KEY`). The GitHub Pages preview stores profiles, areas and prospects you add yourself, and refuses campaigns, site checks, AI profiles, Comtrade and Excel export (409) rather than simulating them.
+- Search results reflect the search engine, not a complete list of companies in an area. Small firms without websites are found only through directories or manual entry.
+- Site checks read up to 3 pages without JavaScript rendering; term matching is literal and can miss synonyms.
+- Industry, location and company facts are never inferred from search results; a person verifies them.
+- Comtrade figures are annual and lag by one or two years; the public preview returns at most 500 rows per call.
+- Overlaps to reconcile in Phase 6: prospect companies/contacts vs CRM companies/contacts; the suppression list is shared with outreach.
 
 ## Before any public/VPS deployment
 

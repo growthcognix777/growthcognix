@@ -152,3 +152,48 @@ export interface Opportunity {
   reviewed_at: string | null; review_note: string | null; created_at: string; updated_at: string;
   evidence: { id: string; source_type: string; source_url: string | null; excerpt: string | null; created_at: string }[];
 }
+
+// ---------------------------------------------------------------- Phase 4: Buyer discovery & lead intelligence
+export type BuyerType = "end_user" | "distributor" | "importer" | "dealer" | "oem" | "institutional" | "project";
+export type GeoLevel = "global" | "country" | "state" | "district" | "city" | "industrial_area";
+export type LeadVerification = "discovered" | "company_verified" | "website_verified" | "industry_verified" | "product_relevance_verified" | "contact_verified" | "needs_review" | "rejected";
+export type ScoreClass = "very_high" | "high" | "medium" | "low";
+export interface LeadProvider { key: string; label: string; kind: string; configured: boolean; daily_limit: number | null; used_today: number | null; cost: string | null; status: string; note?: string; }
+export interface LeadProviders { providers: LeadProvider[]; weights: Record<string, number>; classes: { min: number; class: ScoreClass }[]; verification_order: string[]; buyer_types: BuyerType[]; }
+export interface GeoReference { levels: GeoLevel[]; countries: { name: string; code: string; comtrade: number }[]; india: { states: string[]; union_territories: string[]; note: string }; sources: { name: string; url: string }[]; }
+export interface GeoArea { id: string; client_id: string; level: GeoLevel; name: string; code: string | null; parent_id: string | null; country_code: string | null; path: string[]; notes: string | null; source_url: string | null; created_at: string; }
+export interface DiscoveryCampaign {
+  id: string; client_id: string; name: string; status: "draft" | "queued" | "running" | "paused" | "cancelled" | "completed" | "failed";
+  product_ids: string[]; persona_ids: string[]; geography_ids: string[]; buyer_types: string[]; sources: string[];
+  config: { directory_urls?: string[]; results_per_query?: number; max_companies?: number; weights?: Record<string, number> | null };
+  progress: number; stage: string | null; counts: Record<string, number>; attempts: number; error: string | null;
+  started_at: string | null; completed_at: string | null; created_at: string; targets?: Record<string, number>;
+}
+export interface DiscoveryTarget { id: string; provider: string; query: string; status: string; results_count: number; new_prospects: number; attempts: number; error: string | null; executed_at: string | null; persona_id: string | null; geography_id: string | null; }
+export interface Prospect {
+  id: string; client_id: string; name: string; legal_name: string | null; website: string | null; domain: string | null; description: string | null;
+  industry: string | null; sub_industry: string | null; company_category: string | null; buyer_type: BuyerType | null;
+  country: string | null; state: string | null; district: string | null; city: string | null; industrial_area: string | null;
+  searched_area: string[][]; observed_locations: string[]; qualification_reason: string | null; verification_status: LeadVerification;
+  verified_fields: Record<string, { by: string; at: string; note?: string | null; source_url?: string | null }>; providers: string[]; origin: string;
+  last_verified_at: string | null; site_checked_at: string | null; site_status: string | null; score_total: number | null; score_class: ScoreClass | null;
+  confidence: number | null; crm_status: "none" | "approved" | "handed_off"; crm_handoff_at: string | null; assigned_to: string | null;
+  first_campaign_id: string | null; created_at: string; updated_at: string;
+}
+export interface LeadEvidence { id: string; source_type: string; source_ref: string | null; source_url: string | null; excerpt: string | null; quote_matched: boolean; field: string | null; provider: string | null; observed_at: string | null; created_at: string; }
+export interface BusinessContact { id: string; kind: "role_email" | "phone" | "person"; value: string | null; person_name: string | null; role: string | null; source_url: string | null; observed_at: string | null; origin: string; verified: boolean; purpose: string | null; }
+export interface ScoreComponent { points: number; max: number; reasons: string[]; }
+export interface LeadScore { total: number; score_class: ScoreClass; confidence: number; components: Record<string, ScoreComponent>; weights: Record<string, number>; explanation: string[]; version: string; created_at: string; }
+export interface ProspectDetail extends Prospect {
+  signals: { matched_terms?: { term: string; kind: string; url: string; excerpt: string }[]; intent?: { signal: string; strength: string; url: string; excerpt: string }[];
+    capacity?: { kind: string; value: string; url: string; excerpt: string }[]; pages?: { url: string; title: string | null; type: string | null }[] };
+  evidence: LeadEvidence[]; contacts: BusinessContact[];
+  fits: { id: string; product_id: string | null; persona_id: string | null; application: string | null; relation: string; reason: string | null; matched_terms: string[]; origin: string; verified: boolean }[];
+  score: LeadScore | null; verifications: { id: string; field: string; decision: string; note: string | null; source_url: string | null; user_id: string | null; created_at: string }[];
+  assignments: { id: string; user_id: string | null; assigned_by: string | null; status: string; note: string | null; created_at: string }[];
+}
+export interface ProspectInput { name: string; website?: string | null; source_url: string; buyer_type?: BuyerType | null; industry?: string | null; company_category?: string | null; country?: string | null; state?: string | null; district?: string | null; city?: string | null; industrial_area?: string | null; note?: string | null; }
+export interface ProspectQuery { q?: string; country?: string; state?: string; district?: string; city?: string; industry?: string; product_id?: string; buyer_type?: string; score_class?: string; min_score?: number; verification?: string; source?: string; campaign_id?: string; assigned_to?: string; crm_status?: string; include_rejected?: boolean; sort?: "score" | "recent" | "name"; limit?: number; offset?: number; }
+export interface LeadSummary { prospects: number; by_class: Record<string, number>; by_status: Record<string, number>; by_buyer_type: Record<string, number>; by_crm: Record<string, number>; assigned: number; campaigns: Record<string, number>; profiles: number; areas: number; avg_score: number | null; }
+export interface Suppression { id: string; kind: "domain" | "email" | "phone"; value: string; reason: string | null; created_at: string; }
+export interface MarketInsight { id: string; client_id: string; product_id: string | null; kind: string; hs_code: string | null; reporter: string | null; partner: string | null; flow: string | null; period: string | null; value_usd: number | null; quantity: number | null; quantity_unit: string | null; title: string | null; detail: string | null; source: string; source_url: string | null; retrieved_at: string | null; created_at: string; }

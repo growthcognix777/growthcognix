@@ -142,7 +142,58 @@ export const httpDriver: DataDriver = {
   reviewOpportunity: (id, action, note) => request(`/api/v1/opportunities/${id}/review`, { method: "POST", body: json({ action, note: note || null }) }),
   editOpportunity: (id, b) => request(`/api/v1/opportunities/${id}`, { method: "PATCH", body: json(b) }),
   deleteOpportunity: (id) => request(`/api/v1/opportunities/${id}`, { method: "DELETE" }),
+
+  leadProviders: () => request("/api/v1/leads/providers"),
+  geoReference: () => request("/api/v1/leads/geo/reference"),
+  listBuyerProfiles: (cid) => request(`/api/v1/clients/${cid}/leads/buyer-profiles`),
+  generateBuyerProfiles: (cid, b) => request(`/api/v1/clients/${cid}/leads/buyer-profiles/generate`, { method: "POST", body: json(b) }),
+  listGeos: (cid) => request(`/api/v1/clients/${cid}/leads/geographies`),
+  addGeo: (cid, b) => request(`/api/v1/clients/${cid}/leads/geographies`, { method: "POST", body: json(b) }),
+  deleteGeo: (id) => request(`/api/v1/leads/geographies/${id}`, { method: "DELETE" }),
+  listLeadCampaigns: (cid) => request(`/api/v1/clients/${cid}/leads/campaigns`),
+  createLeadCampaign: (cid, b) => request(`/api/v1/clients/${cid}/leads/campaigns`, { method: "POST", body: json(b) }),
+  getLeadCampaign: (id) => request(`/api/v1/leads/campaigns/${id}`),
+  leadCampaignTargets: (id) => request(`/api/v1/leads/campaigns/${id}/targets`),
+  startLeadCampaign: (id) => request(`/api/v1/leads/campaigns/${id}/start`, { method: "POST" }),
+  pauseLeadCampaign: (id) => request(`/api/v1/leads/campaigns/${id}/pause`, { method: "POST" }),
+  cancelLeadCampaign: (id) => request(`/api/v1/leads/campaigns/${id}/cancel`, { method: "POST" }),
+  listProspects: (cid, q) => request(`/api/v1/clients/${cid}/leads/prospects${qs(q as Record<string, unknown>)}`),
+  addProspect: (cid, b) => request(`/api/v1/clients/${cid}/leads/prospects`, { method: "POST", body: json(b) }),
+  getProspect: (id) => request(`/api/v1/leads/prospects/${id}`),
+  editProspect: (id, b) => request(`/api/v1/leads/prospects/${id}`, { method: "PATCH", body: json(b) }),
+  deleteProspect: (id) => request(`/api/v1/leads/prospects/${id}`, { method: "DELETE" }),
+  verifyProspect: (id, b) => request(`/api/v1/leads/prospects/${id}/verify`, { method: "POST", body: json(b) }),
+  reopenProspect: (id) => request(`/api/v1/leads/prospects/${id}/reopen`, { method: "POST" }),
+  addProspectEvidence: (id, b) => request(`/api/v1/leads/prospects/${id}/evidence`, { method: "POST", body: json(b) }),
+  addProspectContact: (id, b) => request(`/api/v1/leads/prospects/${id}/contacts`, { method: "POST", body: json(b) }),
+  verifyContact: (id, verified) => request(`/api/v1/leads/contacts/${id}/verify${qs({ verified })}`, { method: "POST" }),
+  deleteContact: (id) => request(`/api/v1/leads/contacts/${id}`, { method: "DELETE" }),
+  checkProspectSite: (id) => request(`/api/v1/leads/prospects/${id}/check-site`, { method: "POST" }),
+  scoreHistory: (id) => request(`/api/v1/leads/prospects/${id}/scores`),
+  rescoreLeads: (cid, b) => request(`/api/v1/clients/${cid}/leads/rescore`, { method: "POST", body: json(b) }),
+  assignLeads: (cid, b) => request(`/api/v1/clients/${cid}/leads/assign`, { method: "POST", body: json(b) }),
+  approveLeads: (cid, b) => request(`/api/v1/clients/${cid}/leads/approve`, { method: "POST", body: json(b) }),
+  exportLeads: (cid, format) => blob(`/api/v1/clients/${cid}/leads/export?format=${format}`),
+  crmHandoff: (cid, ids) => request(`/api/v1/clients/${cid}/leads/crm-handoff`, { method: "POST", body: json({ prospect_ids: ids }) }),
+  leadSummary: (cid) => request(`/api/v1/clients/${cid}/leads/summary`),
+  verificationQueue: (cid) => request(`/api/v1/clients/${cid}/leads/verification-queue`),
+  listSuppression: () => request("/api/v1/leads/suppression"),
+  addSuppression: (b) => request("/api/v1/leads/suppression", { method: "POST", body: json(b) }),
+  deleteSuppression: (id) => request(`/api/v1/leads/suppression/${id}`, { method: "DELETE" }),
+  listMarketInsights: (cid, kind) => request(`/api/v1/clients/${cid}/leads/market-insights${qs({ kind })}`),
+  fetchComtrade: (cid, b) => request(`/api/v1/clients/${cid}/leads/market-insights/comtrade`, { method: "POST", body: json(b) }),
+  addMarketInsight: (cid, b) => request(`/api/v1/clients/${cid}/leads/market-insights`, { method: "POST", body: json(b) }),
+  deleteMarketInsight: (id) => request(`/api/v1/leads/market-insights/${id}`, { method: "DELETE" }),
 };
+
+async function blob(path: string): Promise<Blob> {
+  const res = await fetch(`${BASE}${path}`, { headers: { Authorization: `Bearer ${tokenStore.get()}` } });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, typeof body.detail === "string" ? body.detail : "Download failed");
+  }
+  return res.blob();
+}
 
 async function text(path: string): Promise<string> {
   const res = await fetch(`${BASE}${path}`, { headers: { Authorization: `Bearer ${tokenStore.get()}` } });

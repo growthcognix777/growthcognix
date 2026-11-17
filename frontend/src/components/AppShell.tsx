@@ -72,7 +72,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         ))}
       </div>
-      <div className="border-t border-line p-4 text-xs text-navy-500">Phase 3 · Website & Competitors{DATA_MODE === "local" && <div className="mt-1"><Badge tone="amber">Browser sandbox</Badge></div>}</div>
+      <div className="border-t border-line p-4 text-xs text-navy-500">Phase 4 · Buyer Discovery{DATA_MODE === "local" && <div className="mt-1"><Badge tone="amber">Browser sandbox</Badge></div>}</div>
     </nav>
   );
 

@@ -47,6 +47,21 @@ class Settings(BaseSettings):
     competitor_max_pages: int = 25
     pagespeed_api_key: str = ""  # Google PageSpeed Insights API (free key); empty = PageSpeed skipped
 
+    # ---- Phase 4: buyer discovery providers (all optional; none configured = manual/directory only) ----
+    searxng_url: str = ""  # self-hosted SearXNG with the JSON format enabled, e.g. http://searxng:8080 (free)
+    brave_api_key: str = ""  # Brave Search API: no free plan since Feb 2026, $5/month credit (~1,000 queries), card required
+    google_pse_key: str = ""  # Google Programmable Search JSON API: ~100 free queries/day
+    google_pse_cx: str = ""
+    comtrade_api_key: str = ""  # optional; the UN Comtrade public preview API needs no key (500 rows/call)
+    discovery_daily_limit_searxng: int = 500
+    discovery_daily_limit_brave: int = 30  # keeps a month inside the $5 credit
+    discovery_daily_limit_google_pse: int = 100
+    discovery_daily_limit_directory: int = 50
+    discovery_results_per_query: int = 10
+    discovery_max_companies: int = 200  # per campaign ceiling
+    discovery_verify_pages: int = 3  # pages fetched per prospect site (home + contact/about)
+    discovery_provider_timeout: int = 20
+
     @property
     def cors_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

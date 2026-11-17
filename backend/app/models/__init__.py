@@ -31,3 +31,16 @@ from app.models.web import (  # noqa: F401,E402
     Website,
     WebsiteAudit,
 )
+from app.models.leads import (  # noqa: F401,E402
+    BusinessContact,
+    DiscoveryCampaign,
+    DiscoveryTarget,
+    GeographicArea,
+    LeadAssignment,
+    LeadScore,
+    LeadVerification,
+    ProspectCompany,
+    ProspectProductFit,
+    SuppressionEntry,
+    TradeMarketInsight,
+)

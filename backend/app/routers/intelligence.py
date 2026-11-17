@@ -31,12 +31,17 @@ FIELDS: dict[str, dict[str, type]] = {
     "market": {"product_id": str, "scope": str, "name": str, "parent": str, "rationale": str, "priority": str},
     "persona": {"product_id": str, "name": str, "buyer_category": str, "industry": str, "company_size": str,
                 "job_titles": list, "departments": list, "pain_points": list, "purchase_reasons": list,
-                "description": str},
+                "description": str,
+                # Phase 4 buyer-profile fields
+                "buyer_type": str, "industry_relation": str, "application_categories": list, "company_types": list,
+                "problems_solved": list, "substitutes": list, "geography": list, "rationale": str},
     "insight": {"product_id": str, "category": str, "field": str, "title": str, "detail": str},
 }
 REQUIRED = {"profile": ["summary"], "application": ["product_id", "application"], "market": ["scope", "name"],
             "persona": ["name"], "insight": ["category", "title"]}
-ENUMS = {"application_type": {"direct", "indirect"}, "scope": {"india", "state", "district_city", "country", "export_market"},
+ENUMS = {"application_type": {"direct", "indirect"},
+         "buyer_type": {"end_user", "distributor", "importer", "dealer", "oem", "institutional", "project"},
+         "industry_relation": {"direct", "indirect"}, "scope": {"india", "state", "district_city", "country", "export_market"},
          "priority": {"high", "medium", "low", None},
          "category": {"product_fact", "advantage", "differentiation", "industry_usage", "opportunity", "risk", "gap"}}
 INFERRED_TYPES = {"persona", "market"}

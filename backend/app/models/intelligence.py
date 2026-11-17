@@ -129,6 +129,15 @@ class BuyerPersona(FindingMixin, Base):
     pain_points: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     purchase_reasons: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
+    # Phase 4 buyer-profile fields (extends the Phase 2 persona instead of a second model)
+    buyer_type: Mapped[str | None] = mapped_column(String(20))  # end_user|distributor|importer|dealer|oem|institutional|project
+    industry_relation: Mapped[str | None] = mapped_column(String(10))  # direct|indirect
+    application_categories: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    company_types: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    problems_solved: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    substitutes: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    geography: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    rationale: Mapped[str | None] = mapped_column(Text)
 
 
 class BusinessInsight(FindingMixin, Base):
@@ -159,6 +168,10 @@ class EvidenceSource(Base):
     document_id: Mapped[str | None] = mapped_column(ForeignKey("documents.id", ondelete="SET NULL"))
     excerpt: Mapped[str | None] = mapped_column(Text)
     quote_matched: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    # Phase 4 (LeadEvidence): which field the evidence supports, which provider observed it and when.
+    field: Mapped[str | None] = mapped_column(String(40))
+    provider: Mapped[str | None] = mapped_column(String(40))
+    observed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=_now)
 
 

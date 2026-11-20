@@ -197,3 +197,64 @@ export interface ProspectQuery { q?: string; country?: string; state?: string; d
 export interface LeadSummary { prospects: number; by_class: Record<string, number>; by_status: Record<string, number>; by_buyer_type: Record<string, number>; by_crm: Record<string, number>; assigned: number; campaigns: Record<string, number>; profiles: number; areas: number; avg_score: number | null; }
 export interface Suppression { id: string; kind: "domain" | "email" | "phone"; value: string; reason: string | null; created_at: string; }
 export interface MarketInsight { id: string; client_id: string; product_id: string | null; kind: string; hs_code: string | null; reporter: string | null; partner: string | null; flow: string | null; period: string | null; value_usd: number | null; quantity: number | null; quantity_unit: string | null; title: string | null; detail: string | null; source: string; source_url: string | null; retrieved_at: string | null; created_at: string; }
+
+// ---------------------------------------------------------------- Phase 5: Marketing strategy & campaigns
+export type MkStatus = "draft" | "ai_generated" | "internal_review" | "client_review" | "approved" | "scheduled" | "published" | "rejected" | "failed";
+export type MkEntity = "strategy" | "budget" | "content" | "ad_plan";
+export type ReviewAction = "submit" | "approve" | "send_to_client" | "client_approve" | "reject" | "request_changes";
+export type CostKind = "ad_spend" | "agency_fee" | "production";
+export interface Reviewable {
+  status: MkStatus; origin: string; provider: string | null; model: string | null; version: number; reviewed_by: string | null; reviewed_at: string | null;
+  approved_by: string | null; approved_at: string | null; created_by: string | null; created_at: string; updated_at: string;
+}
+export interface StrategySection { key: string; summary: string; facts: { text: string; source_id: string; quote: string }[]; assumptions: string[]; recommendations: string[]; }
+export interface MarketingStrategy extends Reviewable {
+  id: string; client_id: string; title: string; inputs: Record<string, unknown>; sections: Record<string, StrategySection>; disclaimer: string | null;
+  job_status: "queued" | "running" | "completed" | "failed"; error: string | null;
+}
+export interface StrategyInput { title: string; objectives?: string | null; monthly_budget?: number | null; currency?: string; sales_capacity?: string | null; channels_in_use?: string[]; product_ids?: string[]; notes?: string | null; }
+export interface BudgetLine { category: string; cost_kind: CostKind; amount: number; note?: string | null; }
+export interface BudgetSummary { monthly_total: number; quarterly_total: number; by_cost_kind: Record<CostKind, number>; by_category: Record<string, number>; quarterly_by_category: Record<string, number>; share: Record<string, number>; }
+export interface MarketingBudget extends Reviewable {
+  id: string; client_id: string; name: string; strategy_id: string | null; scenario: "base" | "conservative" | "growth" | "custom"; currency: string; monthly_total: number;
+  lines: BudgetLine[]; quarterly_overrides: Record<string, number>; notes: string | null; summary: BudgetSummary;
+}
+export interface BudgetInput { name: string; monthly_total?: number | null; currency?: string; categories?: string[] | null; lines?: BudgetLine[] | null; scenario?: MarketingBudget["scenario"]; strategy_id?: string | null; notes?: string | null; }
+export interface MarketingCampaign { id: string; client_id: string; name: string; objective: string | null; strategy_id: string | null; budget_id: string | null; start_date: string | null; end_date: string | null; status: "planned" | "active" | "paused" | "completed" | "archived"; created_at: string; }
+export interface MarketingCampaignInput { name: string; objective?: string | null; strategy_id?: string | null; budget_id?: string | null; start_date?: string | null; end_date?: string | null; status?: MarketingCampaign["status"]; }
+export interface ContentData {
+  hashtags?: string[]; cta?: string | null; slides?: string[]; scenes?: { time?: string; visual?: string; voiceover?: string; on_screen_text?: string }[]; creative_brief?: string | null;
+  keywords?: string[]; outline?: string[]; meta_title?: string | null; meta_description?: string | null; faqs?: { q: string; a: string }[]; internal_links?: { anchor: string; target: string }[];
+  image_url?: string | null; link?: string | null; notes?: string | null; external_url?: string | null; removed_promises?: string[];
+}
+export interface ContentItem extends Reviewable {
+  id: string; client_id: string; campaign_id: string | null; product_id: string | null; persona_id: string | null; studio: "social" | "seo"; kind: string; platform: string | null;
+  title: string; body: string | null; data: ContentData; claims_to_check: string[]; asset_ids: string[]; scheduled_at: string | null; published_at: string | null;
+  publishing_status: string; assigned_to: string | null;
+}
+export interface ContentInput { studio?: "social" | "seo"; kind: string; platform?: string | null; title: string; body?: string | null; data?: ContentData; product_id?: string | null; persona_id?: string | null; campaign_id?: string | null; scheduled_at?: string | null; assigned_to?: string | null; }
+export interface ContentPatch { title?: string; body?: string | null; data?: ContentData; kind?: string; platform?: string | null; claims_to_check?: string[]; asset_ids?: string[]; scheduled_at?: string | null; clear_schedule?: boolean; assigned_to?: string | null; campaign_id?: string | null; note?: string | null; }
+export interface GenerateContentInput { studio: "social" | "seo"; kind: string; platform?: string | null; product_id?: string | null; persona_id?: string | null; topic?: string | null; tone?: string | null; count?: number; campaign_id?: string | null; }
+export interface BrandAsset { id: string; client_id: string; kind: string; name: string; document_id: string | null; value: string | null; product_id: string | null; tags: string[]; notes: string | null; approved: boolean; approved_by: string | null; approved_at: string | null; created_at: string; }
+export interface BrandAssetInput { kind: string; name: string; document_id?: string | null; value?: string | null; product_id?: string | null; tags?: string[]; notes?: string | null; }
+export interface AdPlan extends Reviewable {
+  id: string; client_id: string; campaign_id: string | null; platform: "meta" | "google" | "linkedin"; name: string; objective: string | null; audience: Record<string, unknown>;
+  geography: string[]; creative_brief: string | null; headlines: string[]; ad_copy: string[]; landing_page: string | null; currency: string; daily_budget: number | null;
+  total_budget: number | null; bidding: string | null; conversion_tracking: string | null; ab_tests: string[]; targets: Record<string, unknown>; claims_to_check: string[];
+  spend_approved: boolean; spend_cap: number | null; spend_approved_by: string | null; spend_approved_at: string | null; note?: string;
+}
+export interface AdPlanInput { platform: AdPlan["platform"]; name?: string; product_id?: string | null; persona_id?: string | null; objective?: string | null; geography?: string[]; landing_page?: string | null; daily_budget?: number | null; total_budget?: number | null; currency?: string; campaign_id?: string | null; audience?: Record<string, unknown>; creative_brief?: string | null; headlines?: string[]; ad_copy?: string[]; bidding?: string | null; conversion_tracking?: string | null; ab_tests?: string[]; targets?: Record<string, unknown>; }
+export interface PlatformStatus { platform: string; automated: boolean; configured: boolean; note: string; missing: string[]; }
+export interface SocialAccount { id: string; client_id: string; platform: string; account_name: string; external_id: string | null; status: string; token_expires_at: string | null; scopes: string[]; permissions: { can_publish?: boolean; can_read_insights?: boolean; [k: string]: unknown }; last_error: string | null; connected_by: string | null; connected_at: string | null; created_at: string; }
+export interface PublishingJob { id: string; client_id: string; content_item_id: string; social_account_id: string | null; platform: string; status: "queued" | "publishing" | "published" | "failed" | "cancelled"; scheduled_at: string | null; attempts: number; error: string | null; external_post_id: string | null; external_url: string | null; content_version: number; requested_by: string | null; published_at: string | null; created_at: string; updated_at: string; title?: string | null; }
+export interface MetricRow { source: "platform" | "calculated"; platform: string; entity_type: string; entity_id: string; title: string | null; external_id: string | null; metric: string; value: number; formula: string | null; retrieved_at: string; }
+export interface MarketingAnalytics { platform: MetricRow[]; calculated: MetricRow[]; not_available: Record<string, string>; }
+export interface MarketingReport { id: string; client_id: string; title: string; period_start: string; period_end: string; markdown?: string; data: Record<string, unknown>; created_at: string; }
+export interface ApprovalRow { id: string; entity_type: MkEntity; entity_id: string; stage: string; status: string; requested_by: string | null; reviewer_id: string | null; reviewer_name: string | null; note: string | null; decided_at: string | null; entity_version: number; created_at: string; title?: string | null; entity_status?: MkStatus; platform?: string | null; kind?: string | null; claims_to_check?: string[]; current_version?: number; }
+export interface Revision { id: string; version: number; snapshot: Record<string, unknown>; note: string | null; user_id: string | null; created_at: string; }
+export interface CalendarSettings { timezone: string; require_client_review: boolean; default_reviewer_id: string | null; }
+export interface MarketingStatus {
+  ai: Record<string, unknown>; publishing: PlatformStatus[]; ad_platforms: Record<string, string>; approval_statuses: MkStatus[]; content_kinds: string[]; social_kinds: string[]; seo_kinds: string[];
+  budget_categories: string[]; budget_labels: Record<string, string>; strategy_sections: string[]; analytics_unavailable: Record<string, string>; email_marketing: string;
+}
+export interface MarketingOverview { strategies: Record<string, number>; content: Record<string, number>; ad_plans: Record<string, number>; accounts: Record<string, number>; pending_approvals: number; upcoming: ContentItem[]; approved_budget: MarketingBudget | null; }

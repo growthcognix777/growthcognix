@@ -5,7 +5,11 @@ import type {
   ComparisonRow, CrawlConfig, CrawlJob, CrawledPage, CrawlerStatus, Opportunity, SEOFinding, Topic, WebsiteAudit, WebsiteRec,
   BuyerType, DiscoveryCampaign, DiscoveryTarget, GeoArea, GeoLevel, GeoReference, LeadProviders, LeadSummary, MarketInsight,
   BusinessContact, Prospect, ProspectDetail, ProspectInput, ProspectQuery, Suppression, LeadScore,
+  AdPlan, AdPlanInput, ApprovalRow, BrandAsset, BrandAssetInput, BudgetInput, BudgetLine, CalendarSettings, ContentInput, ContentItem, ContentPatch,
+  GenerateContentInput, MarketingAnalytics, MarketingBudget, MarketingCampaign, MarketingCampaignInput, MarketingOverview, MarketingReport, MarketingStatus,
+  MarketingStrategy, MkEntity, PlatformStatus, PublishingJob, ReviewAction, Revision, SocialAccount, StrategyInput, StrategySection, BudgetSummary,
 } from "../types";
+export interface ReviewInput { action: ReviewAction; note?: string | null; reviewer_name?: string | null; }
 
 export interface CampaignInput { name: string; persona_ids: string[]; geography_ids: string[]; sources: string[]; directory_urls?: string[]; results_per_query?: number; max_companies?: number; weights?: Record<string, number> | null; }
 export type ProspectPatch = Partial<Pick<Prospect, "name" | "legal_name" | "buyer_type" | "industry" | "sub_industry" | "company_category" | "country" | "state" | "district" | "city" | "industrial_area" | "qualification_reason">>;
@@ -141,4 +145,59 @@ export interface DataDriver {
   fetchComtrade(clientId: string, b: { hs_code: string; reporter: string; period: string; flow: "M" | "X"; partner?: string | null; product_id?: string | null }): Promise<MarketInsight[]>;
   addMarketInsight(clientId: string, b: { kind: string; title: string; detail?: string | null; source_url: string; product_id?: string | null; hs_code?: string | null; reporter?: string | null }): Promise<MarketInsight>;
   deleteMarketInsight(id: string): Promise<void>;
+
+  // Phase 5 — Marketing strategy & campaigns. AI drafting, OAuth, publishing and analytics run only on the backend.
+  marketingStatus(): Promise<MarketingStatus>;
+  marketingOverview(clientId: string): Promise<MarketingOverview>;
+  marketingHistory(entity: MkEntity, id: string): Promise<{ revisions: Revision[]; approvals: ApprovalRow[] }>;
+  marketingApprovals(clientId: string, status?: string | null): Promise<ApprovalRow[]>;
+  review(entity: MkEntity, id: string, b: ReviewInput): Promise<unknown>;
+  listStrategies(clientId: string): Promise<MarketingStrategy[]>;
+  createStrategy(clientId: string, b: StrategyInput): Promise<MarketingStrategy>;
+  getStrategy(id: string): Promise<MarketingStrategy>;
+  editStrategy(id: string, b: { title?: string; sections?: Record<string, Partial<StrategySection>>; note?: string | null }): Promise<MarketingStrategy>;
+  retryStrategy(id: string): Promise<MarketingStrategy>;
+  deleteStrategy(id: string): Promise<void>;
+  budgetTemplate(monthlyTotal: number, categories?: string[]): Promise<{ lines: BudgetLine[]; summary: BudgetSummary; basis: string }>;
+  listBudgets(clientId: string): Promise<MarketingBudget[]>;
+  createBudget(clientId: string, b: BudgetInput): Promise<MarketingBudget>;
+  editBudget(id: string, b: { name?: string; currency?: string; lines?: BudgetLine[]; quarterly_overrides?: Record<string, number>; notes?: string | null }): Promise<MarketingBudget>;
+  budgetScenario(id: string, scenario: "base" | "conservative" | "growth"): Promise<MarketingBudget>;
+  deleteBudget(id: string): Promise<void>;
+  listMarketingCampaigns(clientId: string): Promise<MarketingCampaign[]>;
+  createMarketingCampaign(clientId: string, b: MarketingCampaignInput): Promise<MarketingCampaign>;
+  editMarketingCampaign(id: string, b: MarketingCampaignInput): Promise<MarketingCampaign>;
+  deleteMarketingCampaign(id: string): Promise<void>;
+  generateContent(clientId: string, b: GenerateContentInput): Promise<ContentItem[]>;
+  addContent(clientId: string, b: ContentInput): Promise<ContentItem>;
+  listContent(clientId: string, q?: { studio?: string; status?: string; platform?: string; campaign_id?: string }): Promise<ContentItem[]>;
+  getContent(id: string): Promise<ContentItem>;
+  editContent(id: string, b: ContentPatch): Promise<ContentItem>;
+  deleteContent(id: string): Promise<void>;
+  calendar(clientId: string, start: string, end: string): Promise<{ settings: CalendarSettings; items: ContentItem[] }>;
+  saveCalendarSettings(clientId: string, b: CalendarSettings): Promise<CalendarSettings>;
+  listAssets(clientId: string, kind?: string): Promise<BrandAsset[]>;
+  addAsset(clientId: string, b: BrandAssetInput): Promise<BrandAsset>;
+  approveAsset(id: string, approved: boolean): Promise<BrandAsset>;
+  deleteAsset(id: string): Promise<void>;
+  listAdPlans(clientId: string): Promise<AdPlan[]>;
+  generateAdPlan(clientId: string, b: AdPlanInput): Promise<AdPlan>;
+  addAdPlan(clientId: string, b: AdPlanInput & { name: string }): Promise<AdPlan>;
+  editAdPlan(id: string, b: Partial<AdPlanInput>): Promise<AdPlan>;
+  spendApproval(id: string, b: { approved: boolean; spend_cap?: number | null; note?: string | null }): Promise<AdPlan>;
+  deleteAdPlan(id: string): Promise<void>;
+  listSocialAccounts(clientId: string): Promise<{ accounts: SocialAccount[]; platforms: PlatformStatus[] }>;
+  connectSocial(clientId: string, platform: "facebook" | "instagram" | "linkedin"): Promise<{ authorize_url: string }>;
+  disconnectSocial(id: string): Promise<SocialAccount>;
+  publishContent(id: string, b: { account_id: string; scheduled_at?: string | null }): Promise<PublishingJob>;
+  markPublished(id: string, b: { url: string; published_at?: string | null }): Promise<ContentItem>;
+  publishingJobs(clientId: string, status?: string): Promise<PublishingJob[]>;
+  cancelPublishingJob(id: string): Promise<PublishingJob>;
+  retryPublishingJob(id: string): Promise<PublishingJob>;
+  refreshAnalytics(clientId: string): Promise<{ posts_updated: number; errors: string[]; not_available: string[]; notes: Record<string, string> }>;
+  marketingAnalytics(clientId: string): Promise<MarketingAnalytics>;
+  createMarketingReport(clientId: string, b: { start: string; end: string; title?: string | null }): Promise<MarketingReport>;
+  listMarketingReports(clientId: string): Promise<MarketingReport[]>;
+  marketingReportMarkdown(id: string): Promise<string>;
+  deleteMarketingReport(id: string): Promise<void>;
 }

@@ -18,6 +18,7 @@ import { AGENTS } from "../agents";
 import type { DataDriver } from "./contract";
 import { idb, type Store } from "./idb";
 import { tokenStore } from "./token";
+import { marketingLocal } from "./local-marketing";
 
 type StoredUser = User & { tenant_id: string; password_hash: string; salt: string };
 type Owned<T> = T & { tenant_id: string };
@@ -891,4 +892,7 @@ export const localDriver: DataDriver = {
     return strip(i) as MarketInsight;
   },
   async deleteMarketInsight(id) { const { tenant } = await ctx(); await owned("insights", tenant.id, id, "Insight"); await idb.del("insights", id); },
+
+  // ---------------------------------------------------------------- Phase 5 (browser preview)
+  ...marketingLocal({ ctx, owned, scoped, log }),
 };

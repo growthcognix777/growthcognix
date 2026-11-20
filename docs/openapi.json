@@ -2,8 +2,8 @@
  "openapi": "3.1.0",
  "info": {
   "title": "GrowthCognix API",
-  "description": "GrowthCognix \u2014 multi-tenant growth intelligence platform (Phase 1 foundation + Phase 2 client intelligence engine + Phase 3 website audit & competitor intelligence + Phase 4 buyer discovery & lead intelligence).",
-  "version": "4.0.0-phase4"
+  "description": "GrowthCognix \u2014 multi-tenant growth intelligence platform (Phase 1 foundation + Phase 2 client intelligence engine + Phase 3 website audit & competitor intelligence + Phase 4 buyer discovery & lead intelligence + Phase 5 marketing strategy & campaigns).",
+  "version": "5.0.0-phase5"
  },
  "paths": {
   "/api/v1/auth/register": {
@@ -2538,7 +2538,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/ReviewIn"
+        "$ref": "#/components/schemas/app__routers__intelligence__ReviewIn"
        }
       }
      }
@@ -4648,7 +4648,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/CampaignIn"
+        "$ref": "#/components/schemas/app__routers__leads__CampaignIn"
        }
       }
      }
@@ -6551,6 +6551,2964 @@
     }
    }
   },
+  "/api/v1/marketing/status": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Status",
+    "operationId": "status_api_v1_marketing_status_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/overview": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Overview",
+    "operationId": "overview_api_v1_clients__client_id__marketing_overview_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/{entity_type}/{entity_id}/history": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "History",
+    "operationId": "history_api_v1_marketing__entity_type___entity_id__history_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "entity_type",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "strategy",
+        "budget",
+        "content",
+        "ad_plan"
+       ],
+       "type": "string",
+       "title": "Entity Type"
+      }
+     },
+     {
+      "name": "entity_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Entity Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/approvals": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Approvals",
+    "operationId": "approvals_api_v1_clients__client_id__marketing_approvals_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": "pending",
+       "title": "Status"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/strategies": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Strategies",
+    "operationId": "list_strategies_api_v1_clients__client_id__marketing_strategies_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Create Strategy",
+    "operationId": "create_strategy_api_v1_clients__client_id__marketing_strategies_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StrategyIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/strategies/{sid}": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Get Strategy",
+    "operationId": "get_strategy_api_v1_marketing_strategies__sid__get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Edit Strategy",
+    "operationId": "edit_strategy_api_v1_marketing_strategies__sid__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StrategyPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Strategy",
+    "operationId": "delete_strategy_api_v1_marketing_strategies__sid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/strategies/{sid}/review": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Review Strategy",
+    "operationId": "review_strategy_api_v1_marketing_strategies__sid__review_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__routers__marketing__ReviewIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/strategies/{sid}/retry": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Retry Strategy",
+    "operationId": "retry_strategy_api_v1_marketing_strategies__sid__retry_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/budget-template": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Budget Template",
+    "operationId": "budget_template_api_v1_marketing_budget_template_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "monthly_total",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "number",
+       "maximum": 100000000000.0,
+       "minimum": 0.0,
+       "title": "Monthly Total"
+      }
+     },
+     {
+      "name": "categories",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Categories"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/budgets": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Budgets",
+    "operationId": "list_budgets_api_v1_clients__client_id__marketing_budgets_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Create Budget",
+    "operationId": "create_budget_api_v1_clients__client_id__marketing_budgets_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BudgetIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/budgets/{bid}": {
+   "patch": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Edit Budget",
+    "operationId": "edit_budget_api_v1_marketing_budgets__bid__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "bid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Bid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BudgetPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Budget",
+    "operationId": "delete_budget_api_v1_marketing_budgets__bid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "bid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Bid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/budgets/{bid}/scenario": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Budget Scenario",
+    "operationId": "budget_scenario_api_v1_marketing_budgets__bid__scenario_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "bid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Bid"
+      }
+     },
+     {
+      "name": "scenario",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "enum": [
+        "base",
+        "conservative",
+        "growth"
+       ],
+       "type": "string",
+       "title": "Scenario"
+      }
+     }
+    ],
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/budgets/{bid}/review": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Review Budget",
+    "operationId": "review_budget_api_v1_marketing_budgets__bid__review_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "bid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Bid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__routers__marketing__ReviewIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/campaigns": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Campaigns",
+    "operationId": "list_campaigns_api_v1_clients__client_id__marketing_campaigns_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Create Campaign",
+    "operationId": "create_campaign_api_v1_clients__client_id__marketing_campaigns_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__routers__marketing__CampaignIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/campaigns/{cid}": {
+   "patch": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Edit Campaign",
+    "operationId": "edit_campaign_api_v1_marketing_campaigns__cid__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "cid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Cid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__routers__marketing__CampaignIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Campaign",
+    "operationId": "delete_campaign_api_v1_marketing_campaigns__cid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "cid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Cid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/content/generate": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Generate",
+    "operationId": "generate_api_v1_clients__client_id__marketing_content_generate_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GenerateIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/content": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Add Content",
+    "operationId": "add_content_api_v1_clients__client_id__marketing_content_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ContentIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Content",
+    "operationId": "list_content_api_v1_clients__client_id__marketing_content_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "studio",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Studio"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "platform",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Platform"
+      }
+     },
+     {
+      "name": "campaign_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Campaign Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 200,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/content/{iid}": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Get Content",
+    "operationId": "get_content_api_v1_marketing_content__iid__get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "iid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Iid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Edit Content",
+    "operationId": "edit_content_api_v1_marketing_content__iid__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "iid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Iid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ContentPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Content",
+    "operationId": "delete_content_api_v1_marketing_content__iid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "iid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Iid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/content/{iid}/review": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Review Content",
+    "operationId": "review_content_api_v1_marketing_content__iid__review_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "iid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Iid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__routers__marketing__ReviewIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/calendar": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Calendar",
+    "operationId": "calendar_api_v1_clients__client_id__marketing_calendar_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "start",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date-time",
+       "title": "Start"
+      }
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date-time",
+       "title": "End"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/calendar/settings": {
+   "put": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Calendar Settings",
+    "operationId": "calendar_settings_api_v1_clients__client_id__marketing_calendar_settings_put",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CalendarSettings"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/assets": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Assets",
+    "operationId": "list_assets_api_v1_clients__client_id__marketing_assets_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Kind"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Add Asset",
+    "operationId": "add_asset_api_v1_clients__client_id__marketing_assets_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AssetIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/assets/{aid}/approve": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Approve Asset",
+    "operationId": "approve_asset_api_v1_marketing_assets__aid__approve_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "aid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Aid"
+      }
+     },
+     {
+      "name": "approved",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": true,
+       "title": "Approved"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/assets/{aid}": {
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Asset",
+    "operationId": "delete_asset_api_v1_marketing_assets__aid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "aid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Aid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/ad-plans": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Ads",
+    "operationId": "list_ads_api_v1_clients__client_id__marketing_ad_plans_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Add Ad",
+    "operationId": "add_ad_api_v1_clients__client_id__marketing_ad_plans_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AdIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/ad-plans/generate": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Generate Ad",
+    "operationId": "generate_ad_api_v1_clients__client_id__marketing_ad_plans_generate_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AdGenerate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/ad-plans/{aid}": {
+   "patch": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Edit Ad",
+    "operationId": "edit_ad_api_v1_marketing_ad_plans__aid__patch",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "aid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Aid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AdPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Ad",
+    "operationId": "delete_ad_api_v1_marketing_ad_plans__aid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "aid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Aid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/ad-plans/{aid}/review": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Review Ad",
+    "operationId": "review_ad_api_v1_marketing_ad_plans__aid__review_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "aid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Aid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__routers__marketing__ReviewIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/ad-plans/{aid}/spend-approval": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Spend Approval",
+    "description": "Records the spend decision only. Nothing is spent: no ad-account adapter exists in this phase.",
+    "operationId": "spend_approval_api_v1_marketing_ad_plans__aid__spend_approval_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "aid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Aid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SpendIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/accounts": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Accounts",
+    "operationId": "list_accounts_api_v1_clients__client_id__marketing_accounts_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/accounts/connect": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Connect",
+    "operationId": "connect_api_v1_clients__client_id__marketing_accounts_connect_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ConnectIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/oauth/{provider}/callback": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Oauth Callback",
+    "description": "The provider redirects the browser here. The one-time `state` ties it to the pending connection.",
+    "operationId": "oauth_callback_api_v1_marketing_oauth__provider__callback_get",
+    "parameters": [
+     {
+      "name": "provider",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "meta",
+        "linkedin"
+       ],
+       "type": "string",
+       "title": "Provider"
+      }
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "State"
+      }
+     },
+     {
+      "name": "code",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Code"
+      }
+     },
+     {
+      "name": "error",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Error"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/accounts/{acct_id}/disconnect": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Disconnect",
+    "operationId": "disconnect_api_v1_marketing_accounts__acct_id__disconnect_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "acct_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Acct Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/content/{iid}/publish": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Publish",
+    "operationId": "publish_api_v1_marketing_content__iid__publish_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "iid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Iid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PublishIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/content/{iid}/mark-published": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Mark Published",
+    "description": "For posts the team published itself (e.g. YouTube): records where it went live. Needs an approved item.",
+    "operationId": "mark_published_api_v1_marketing_content__iid__mark_published_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "iid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Iid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ManualIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/publishing-jobs": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Publishing Jobs",
+    "operationId": "publishing_jobs_api_v1_clients__client_id__marketing_publishing_jobs_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/publishing-jobs/{jid}/cancel": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Cancel Job",
+    "operationId": "cancel_job_api_v1_marketing_publishing_jobs__jid__cancel_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "jid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Jid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/publishing-jobs/{jid}/retry": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Retry Job",
+    "operationId": "retry_job_api_v1_marketing_publishing_jobs__jid__retry_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "jid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Jid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/analytics/refresh": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Refresh Analytics",
+    "operationId": "refresh_analytics_api_v1_clients__client_id__marketing_analytics_refresh_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/analytics": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Analytics",
+    "operationId": "analytics_api_v1_clients__client_id__marketing_analytics_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/clients/{client_id}/marketing/reports": {
+   "post": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Create Report",
+    "operationId": "create_report_api_v1_clients__client_id__marketing_reports_post",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReportIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "List Reports",
+    "operationId": "list_reports_api_v1_clients__client_id__marketing_reports_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/reports/{rid}/report.md": {
+   "get": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Report Md",
+    "operationId": "report_md_api_v1_marketing_reports__rid__report_md_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Rid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "text/plain": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/marketing/reports/{rid}": {
+   "delete": {
+    "tags": [
+     "marketing strategy & campaigns"
+    ],
+    "summary": "Delete Report",
+    "operationId": "delete_report_api_v1_marketing_reports__rid__delete",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Rid"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/health": {
    "get": {
     "tags": [
@@ -6635,6 +9593,485 @@
      "created_at"
     ],
     "title": "ActivityOut"
+   },
+   "AdGenerate": {
+    "properties": {
+     "platform": {
+      "type": "string",
+      "enum": [
+       "meta",
+       "google",
+       "linkedin"
+      ],
+      "title": "Platform"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "persona_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persona Id"
+     },
+     "objective": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Objective"
+     },
+     "geography": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 30,
+      "title": "Geography"
+     },
+     "landing_page": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Landing Page"
+     },
+     "daily_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Daily Budget"
+     },
+     "total_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Budget"
+     },
+     "currency": {
+      "type": "string",
+      "maxLength": 3,
+      "minLength": 3,
+      "title": "Currency",
+      "default": "INR"
+     },
+     "campaign_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Campaign Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "platform"
+    ],
+    "title": "AdGenerate"
+   },
+   "AdIn": {
+    "properties": {
+     "platform": {
+      "type": "string",
+      "enum": [
+       "meta",
+       "google",
+       "linkedin"
+      ],
+      "title": "Platform"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "persona_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persona Id"
+     },
+     "objective": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Objective"
+     },
+     "geography": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 30,
+      "title": "Geography"
+     },
+     "landing_page": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Landing Page"
+     },
+     "daily_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Daily Budget"
+     },
+     "total_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Budget"
+     },
+     "currency": {
+      "type": "string",
+      "maxLength": 3,
+      "minLength": 3,
+      "title": "Currency",
+      "default": "INR"
+     },
+     "campaign_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Campaign Id"
+     },
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "audience": {
+      "type": "object",
+      "title": "Audience"
+     },
+     "creative_brief": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 3000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Creative Brief"
+     },
+     "headlines": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 20,
+      "title": "Headlines"
+     },
+     "ad_copy": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 10,
+      "title": "Ad Copy"
+     },
+     "bidding": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Bidding"
+     },
+     "conversion_tracking": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Conversion Tracking"
+     },
+     "ab_tests": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 10,
+      "title": "Ab Tests"
+     },
+     "targets": {
+      "type": "object",
+      "title": "Targets"
+     }
+    },
+    "type": "object",
+    "required": [
+     "platform",
+     "name"
+    ],
+    "title": "AdIn"
+   },
+   "AdPatch": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200,
+        "minLength": 2
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "objective": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Objective"
+     },
+     "audience": {
+      "anyOf": [
+       {
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Audience"
+     },
+     "geography": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Geography"
+     },
+     "creative_brief": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Creative Brief"
+     },
+     "headlines": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Headlines"
+     },
+     "ad_copy": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ad Copy"
+     },
+     "landing_page": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Landing Page"
+     },
+     "daily_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Daily Budget"
+     },
+     "total_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Budget"
+     },
+     "bidding": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Bidding"
+     },
+     "conversion_tracking": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Conversion Tracking"
+     },
+     "ab_tests": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ab Tests"
+     },
+     "targets": {
+      "anyOf": [
+       {
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Targets"
+     }
+    },
+    "type": "object",
+    "title": "AdPatch"
    },
    "AnalysisOut": {
     "properties": {
@@ -6826,6 +10263,80 @@
     ],
     "title": "ApproveIn"
    },
+   "AssetIn": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "document_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Document Id"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "tags": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 20,
+      "title": "Tags"
+     },
+     "notes": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "name"
+    ],
+    "title": "AssetIn"
+   },
    "AssignIn": {
     "properties": {
      "prospect_ids": {
@@ -6897,7 +10408,7 @@
     ],
     "title": "Body_upload_document_api_v1_documents_post"
    },
-   "CampaignIn": {
+   "BudgetIn": {
     "properties": {
      "name": {
       "type": "string",
@@ -6905,59 +10416,142 @@
       "minLength": 2,
       "title": "Name"
      },
-     "persona_ids": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "maxItems": 30,
-      "minItems": 1,
-      "title": "Persona Ids"
+     "monthly_total": {
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 100000000000.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Monthly Total"
      },
-     "geography_ids": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "maxItems": 50,
-      "title": "Geography Ids"
+     "currency": {
+      "type": "string",
+      "maxLength": 3,
+      "minLength": 3,
+      "title": "Currency",
+      "default": "INR"
      },
-     "sources": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "maxItems": 5,
-      "minItems": 1,
-      "title": "Sources"
+     "categories": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Categories"
      },
-     "directory_urls": {
-      "items": {
-       "type": "string"
-      },
-      "type": "array",
-      "maxItems": 20,
-      "title": "Directory Urls"
+     "lines": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/Line"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lines"
      },
-     "results_per_query": {
-      "type": "integer",
-      "maximum": 20.0,
-      "minimum": 1.0,
-      "title": "Results Per Query",
-      "default": 10
+     "scenario": {
+      "type": "string",
+      "enum": [
+       "base",
+       "conservative",
+       "growth",
+       "custom"
+      ],
+      "title": "Scenario",
+      "default": "base"
      },
-     "max_companies": {
-      "type": "integer",
-      "maximum": 1000.0,
-      "minimum": 1.0,
-      "title": "Max Companies",
-      "default": 200
+     "strategy_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Strategy Id"
      },
-     "weights": {
+     "notes": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "title": "BudgetIn"
+   },
+   "BudgetPatch": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200,
+        "minLength": 2
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "currency": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 3,
+        "minLength": 3
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Currency"
+     },
+     "lines": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/Line"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lines"
+     },
+     "quarterly_overrides": {
       "anyOf": [
        {
         "additionalProperties": {
-         "type": "integer"
+         "type": "number"
         },
         "type": "object"
        },
@@ -6965,16 +10559,51 @@
         "type": "null"
        }
       ],
-      "title": "Weights"
+      "title": "Quarterly Overrides"
+     },
+     "notes": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
      }
     },
     "type": "object",
-    "required": [
-     "name",
-     "persona_ids",
-     "sources"
-    ],
-    "title": "CampaignIn"
+    "title": "BudgetPatch"
+   },
+   "CalendarSettings": {
+    "properties": {
+     "timezone": {
+      "type": "string",
+      "maxLength": 60,
+      "title": "Timezone",
+      "default": "Asia/Kolkata"
+     },
+     "require_client_review": {
+      "type": "boolean",
+      "title": "Require Client Review",
+      "default": false
+     },
+     "default_reviewer_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Default Reviewer Id"
+     }
+    },
+    "type": "object",
+    "title": "CalendarSettings"
    },
    "ClientCreate": {
     "properties": {
@@ -7798,6 +11427,24 @@
     ],
     "title": "ComtradeIn"
    },
+   "ConnectIn": {
+    "properties": {
+     "platform": {
+      "type": "string",
+      "enum": [
+       "facebook",
+       "instagram",
+       "linkedin"
+      ],
+      "title": "Platform"
+     }
+    },
+    "type": "object",
+    "required": [
+     "platform"
+    ],
+    "title": "ConnectIn"
+   },
    "ContactIn": {
     "properties": {
      "kind": {
@@ -7871,6 +11518,261 @@
      "source_url"
     ],
     "title": "ContactIn"
+   },
+   "ContentIn": {
+    "properties": {
+     "studio": {
+      "type": "string",
+      "enum": [
+       "social",
+       "seo"
+      ],
+      "title": "Studio",
+      "default": "social"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "platform": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Platform"
+     },
+     "title": {
+      "type": "string",
+      "maxLength": 300,
+      "minLength": 2,
+      "title": "Title"
+     },
+     "body": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 60000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Body"
+     },
+     "data": {
+      "type": "object",
+      "title": "Data"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "persona_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persona Id"
+     },
+     "campaign_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Campaign Id"
+     },
+     "scheduled_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Scheduled At"
+     },
+     "assigned_to": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Assigned To"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "title"
+    ],
+    "title": "ContentIn"
+   },
+   "ContentPatch": {
+    "properties": {
+     "title": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300,
+        "minLength": 2
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "body": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 60000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Body"
+     },
+     "data": {
+      "anyOf": [
+       {
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Data"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Kind"
+     },
+     "platform": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Platform"
+     },
+     "claims_to_check": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Claims To Check"
+     },
+     "asset_ids": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Asset Ids"
+     },
+     "scheduled_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Scheduled At"
+     },
+     "clear_schedule": {
+      "type": "boolean",
+      "title": "Clear Schedule",
+      "default": false
+     },
+     "assigned_to": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Assigned To"
+     },
+     "campaign_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Campaign Id"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "title": "ContentPatch"
    },
    "DocumentOut": {
     "properties": {
@@ -8007,6 +11909,103 @@
      "data"
     ],
     "title": "FindingPatch"
+   },
+   "GenerateIn": {
+    "properties": {
+     "studio": {
+      "type": "string",
+      "enum": [
+       "social",
+       "seo"
+      ],
+      "title": "Studio"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "platform": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Platform"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "persona_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persona Id"
+     },
+     "topic": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Topic"
+     },
+     "tone": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 100
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tone"
+     },
+     "count": {
+      "type": "integer",
+      "maximum": 5.0,
+      "minimum": 1.0,
+      "title": "Count",
+      "default": 1
+     },
+     "campaign_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Campaign Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "studio",
+     "kind"
+    ],
+    "title": "GenerateIn"
    },
    "GeoIn": {
     "properties": {
@@ -8359,6 +12358,42 @@
     ],
     "title": "JobOut"
    },
+   "Line": {
+    "properties": {
+     "category": {
+      "type": "string",
+      "title": "Category"
+     },
+     "cost_kind": {
+      "type": "string",
+      "title": "Cost Kind"
+     },
+     "amount": {
+      "type": "number",
+      "minimum": 0.0,
+      "title": "Amount"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "category",
+     "cost_kind",
+     "amount"
+    ],
+    "title": "Line"
+   },
    "LoginIn": {
     "properties": {
      "email": {
@@ -8379,6 +12414,33 @@
      "password"
     ],
     "title": "LoginIn"
+   },
+   "ManualIn": {
+    "properties": {
+     "url": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 8,
+      "title": "Url"
+     },
+     "published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "url"
+    ],
+    "title": "ManualIn"
    },
    "OppPatch": {
     "properties": {
@@ -9307,6 +13369,31 @@
     "type": "object",
     "title": "ProspectPatch"
    },
+   "PublishIn": {
+    "properties": {
+     "account_id": {
+      "type": "string",
+      "title": "Account Id"
+     },
+     "scheduled_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Scheduled At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "account_id"
+    ],
+    "title": "PublishIn"
+   },
    "RegisterIn": {
     "properties": {
      "agency_name": {
@@ -9342,35 +13429,37 @@
     ],
     "title": "RegisterIn"
    },
-   "ReviewIn": {
+   "ReportIn": {
     "properties": {
-     "action": {
+     "start": {
       "type": "string",
-      "enum": [
-       "approve",
-       "reject",
-       "needs_review"
-      ],
-      "title": "Action"
+      "format": "date",
+      "title": "Start"
      },
-     "note": {
+     "end": {
+      "type": "string",
+      "format": "date",
+      "title": "End"
+     },
+     "title": {
       "anyOf": [
        {
         "type": "string",
-        "maxLength": 2000
+        "maxLength": 200
        },
        {
         "type": "null"
        }
       ],
-      "title": "Note"
+      "title": "Title"
      }
     },
     "type": "object",
     "required": [
-     "action"
+     "start",
+     "end"
     ],
-    "title": "ReviewIn"
+    "title": "ReportIn"
    },
    "ScoreIn": {
     "properties": {
@@ -9400,6 +13489,43 @@
     "type": "object",
     "title": "ScoreIn"
    },
+   "SpendIn": {
+    "properties": {
+     "approved": {
+      "type": "boolean",
+      "title": "Approved"
+     },
+     "spend_cap": {
+      "anyOf": [
+       {
+        "type": "number",
+        "exclusiveMinimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Spend Cap"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 1000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "approved"
+    ],
+    "title": "SpendIn"
+   },
    "StartAudit": {
     "properties": {
      "crawl_config": {
@@ -9416,6 +13542,137 @@
     },
     "type": "object",
     "title": "StartAudit"
+   },
+   "StrategyIn": {
+    "properties": {
+     "title": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 3,
+      "title": "Title"
+     },
+     "objectives": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Objectives"
+     },
+     "monthly_budget": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Monthly Budget"
+     },
+     "currency": {
+      "type": "string",
+      "maxLength": 3,
+      "minLength": 3,
+      "title": "Currency",
+      "default": "INR"
+     },
+     "sales_capacity": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sales Capacity"
+     },
+     "channels_in_use": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 20,
+      "title": "Channels In Use"
+     },
+     "product_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 50,
+      "title": "Product Ids"
+     },
+     "notes": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "title"
+    ],
+    "title": "StrategyIn"
+   },
+   "StrategyPatch": {
+    "properties": {
+     "title": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200,
+        "minLength": 3
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "sections": {
+      "anyOf": [
+       {
+        "additionalProperties": {
+         "type": "object"
+        },
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sections"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "title": "StrategyPatch"
    },
    "SuppressIn": {
     "properties": {
@@ -9824,6 +14081,245 @@
     },
     "type": "object",
     "title": "WebsiteIn"
+   },
+   "app__routers__intelligence__ReviewIn": {
+    "properties": {
+     "action": {
+      "type": "string",
+      "enum": [
+       "approve",
+       "reject",
+       "needs_review"
+      ],
+      "title": "Action"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "action"
+    ],
+    "title": "ReviewIn"
+   },
+   "app__routers__leads__CampaignIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "persona_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 30,
+      "minItems": 1,
+      "title": "Persona Ids"
+     },
+     "geography_ids": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 50,
+      "title": "Geography Ids"
+     },
+     "sources": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 5,
+      "minItems": 1,
+      "title": "Sources"
+     },
+     "directory_urls": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "maxItems": 20,
+      "title": "Directory Urls"
+     },
+     "results_per_query": {
+      "type": "integer",
+      "maximum": 20.0,
+      "minimum": 1.0,
+      "title": "Results Per Query",
+      "default": 10
+     },
+     "max_companies": {
+      "type": "integer",
+      "maximum": 1000.0,
+      "minimum": 1.0,
+      "title": "Max Companies",
+      "default": 200
+     },
+     "weights": {
+      "anyOf": [
+       {
+        "additionalProperties": {
+         "type": "integer"
+        },
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weights"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "persona_ids",
+     "sources"
+    ],
+    "title": "CampaignIn"
+   },
+   "app__routers__marketing__CampaignIn": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 2,
+      "title": "Name"
+     },
+     "objective": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Objective"
+     },
+     "strategy_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Strategy Id"
+     },
+     "budget_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Budget Id"
+     },
+     "start_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Start Date"
+     },
+     "end_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End Date"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "planned",
+       "active",
+       "paused",
+       "completed",
+       "archived"
+      ],
+      "title": "Status",
+      "default": "planned"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "title": "CampaignIn"
+   },
+   "app__routers__marketing__ReviewIn": {
+    "properties": {
+     "action": {
+      "type": "string",
+      "enum": [
+       "submit",
+       "approve",
+       "send_to_client",
+       "client_approve",
+       "reject",
+       "request_changes"
+      ],
+      "title": "Action"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 2000
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     },
+     "reviewer_name": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reviewer Name"
+     }
+    },
+    "type": "object",
+    "required": [
+     "action"
+    ],
+    "title": "ReviewIn"
    }
   },
   "securitySchemes": {

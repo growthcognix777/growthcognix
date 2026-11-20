@@ -7,7 +7,7 @@ A multi-tenant AI business growth and marketing intelligence platform for digita
 
 **Live preview:** https://growthcognix777.github.io/growthcognix/ — runs in *browser sandbox* mode (see below).
 
-> Status: **Phase 4 — Global Buyer Discovery & Lead Intelligence** (this release). Local development build, not a production SaaS release.
+> Status: **Phase 5 — AI Marketing Strategy & Campaign Automation** (this release). Local development build, not a production SaaS release.
 
 ## Roadmap (7 phases)
 
@@ -160,6 +160,30 @@ API collection: `docs/api-requests.http` · OpenAPI spec: `docs/openapi.json` ·
 - Industry, location and company facts are never inferred from search results; a person verifies them.
 - Comtrade figures are annual and lag by one or two years; the public preview returns at most 500 rows per call.
 - Overlaps to reconcile in Phase 6: prospect companies/contacts vs CRM companies/contacts; the suppression list is shared with outreach.
+
+## Phase 5: AI Marketing Strategy & Campaign Automation
+
+- **Tables (migration `0005`):** marketing_strategies, marketing_budgets, marketing_campaigns, content_calendars (per-client settings), content_items (every post, script and SEO piece; the calendar is their `scheduled_at`), content_revisions, content_assets, approval_requests, social_accounts, publishing_jobs, advertising_campaigns (ad plans), campaign_metrics, marketing_reports.
+- **AI strategy (RQ worker, Gemini/Groq):** 14 sections (executive summary, positioning, brand messaging, target audience, channel, SEO, social, paid ads, content, lead generation, calendar, budget allocation, KPIs, reporting). Inputs are the client's own records: profile, products, documents, approved buyer profiles, target markets, accepted competitors, the latest website audit, approved brand assets and channels, plus the objectives, budget and sales capacity you enter. Each section keeps **verified facts** (a fact must quote a client source, checked word for word; otherwise it is demoted to an assumption), **assumptions** and **AI recommendations** apart. Outcome promises ("guaranteed leads") are removed and noted.
+- **Budget planner (deterministic, no AI):** monthly + quarterly, across SEO, social media, content production, paid search, social ads, video production, email and agency services. Every line is editable and tagged as proposed ad spend, agency fee or production cost. Conservative (×0.7), base and growth (×1.4) copies. The template shares are a starting point, not benchmarks.
+- **Social studio:** single-image posts, carousels, reel/short/long video scripts, captions, hashtags, CTAs, announcements, educational, case study, promotional and festival/seasonal content for Instagram, Facebook, LinkedIn, YouTube and Shorts, within each platform's published limits (Instagram 2,200 characters and 30 hashtags; LinkedIn 3,000).
+- **SEO studio:** keyword clusters, topic maps, outlines, blog articles, product descriptions, industry and location landing pages, meta tags (60/155 characters), FAQs and internal links.
+- **Claims guard:** every draft (AI or human) is scanned for certifications, awards, numbers, prices, endorsements and comparisons; each flagged sentence must be checked, and approving needs a note saying how. Guarantee language is rejected.
+- **Approvals:** Draft → AI generated → Internal review → (Client review, optional per client) → Approved → Scheduled → Published, plus Rejected and Failed. Staff draft and submit; managers approve; a client approval records the client contact's name. Editing anything approved or scheduled creates a new version and revision, sends it back to internal review and cancels queued posts. Moving a date keeps approval.
+- **Brand & creative library:** logos, colours (hex), fonts, product images, guidelines, templates and past creatives, linked to uploaded documents or https links. Only approved assets can be attached or passed to the AI. No image generation this phase (creative briefs only).
+- **Ad planner:** Meta, Google and LinkedIn plans (objective, audience, geography, creative brief, headlines and copy within platform limits, landing page, budget, bidding, conversion tracking, A/B tests, targets). Nothing is created on any ad platform. An admin can record a spend approval with a cap no higher than the plan's total; any later edit withdraws it.
+- **Publishing (official APIs only):** OAuth connect for Facebook Pages and Instagram professional accounts (Meta Graph API `v27.0`) and LinkedIn members (Posts API, `Linkedin-Version: 202610`). Tokens are Fernet-encrypted (`MARKETING_TOKEN_KEY`). Only approved content whose approved version is current can be published, now or at a scheduled time (the scheduler enqueues due posts). Failed jobs show the platform's error and can be retried; YouTube uploads are not automated and are recorded manually with their URL.
+- **Analytics:** Facebook post reactions, comments and shares and Instagram likes and comments as reported by the platform; "engagements" is labelled as a GrowthCognix calculation with its formula. LinkedIn statistics, YouTube Analytics, GA4 and ad metrics (spend, CPL, ROAS) are listed as not available, never estimated.
+- **Reports:** per-client Markdown reports built only from stored records and reported metrics.
+- **UI:** client → Marketing with 13 screens: overview, AI strategy, budget planner, social studio, SEO studio, creative assets, ad planner, calendar (week/month/quarter, drag to move), approval centre, social accounts, publishing history, analytics, reports.
+
+### Honest limitations (Phase 5)
+
+- AI drafting needs `GEMINI_API_KEY` or `GROQ_API_KEY` on the backend. The GitHub Pages preview stores budgets, campaigns, hand-written content, assets, ad plans, approvals and reports in your browser, and refuses AI, OAuth, publishing and analytics (409) instead of simulating them.
+- Publishing needs your own Meta app (`pages_manage_posts`, `instagram_content_publish` need App Review) and a LinkedIn app with Share on LinkedIn; organisation pages need the Community Management API. Neither was exercised against live accounts in this build; the tests use a fake API.
+- Instagram publishing needs a public https image URL on the item.
+- Email marketing (#12) is a planned adapter (Listmonk + a free SMTP tier), not built.
+- `PUBLIC_API_URL` must be reachable by Meta/LinkedIn for OAuth callbacks (HTTPS in production).
 
 ## Before any public/VPS deployment
 

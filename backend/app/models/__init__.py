@@ -44,3 +44,18 @@ from app.models.leads import (  # noqa: F401,E402
     SuppressionEntry,
     TradeMarketInsight,
 )
+from app.models.marketing import (  # noqa: F401,E402
+    AdvertisingCampaign,
+    ApprovalRequest,
+    CampaignMetric,
+    ContentAsset,
+    ContentCalendar,
+    ContentItem,
+    ContentRevision,
+    MarketingBudget,
+    MarketingCampaign,
+    MarketingReport,
+    MarketingStrategy,
+    PublishingJob,
+    SocialAccount,
+)

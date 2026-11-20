@@ -62,6 +62,18 @@ class Settings(BaseSettings):
     discovery_verify_pages: int = 3  # pages fetched per prospect site (home + contact/about)
     discovery_provider_timeout: int = 20
 
+    # ---- Phase 5: marketing. Publishing uses official APIs only; every value optional. ----
+    marketing_token_key: str = ""  # Fernet key (urlsafe base64, 32 bytes) for OAuth tokens; required to connect accounts
+    public_api_url: str = "http://localhost:8000"  # where OAuth providers redirect back to (…/api/v1/marketing/oauth/{platform}/callback)
+    public_app_url: str = "http://localhost:3000"  # where the browser returns after OAuth
+    meta_app_id: str = ""  # Meta app (Facebook Pages + Instagram Graph API); publishing needs App Review for pages_manage_posts etc.
+    meta_app_secret: str = ""
+    meta_graph_version: str = "v27.0"  # verified 2026-11-17 (v21.0 removed 2027-01-21)
+    linkedin_client_id: str = ""  # LinkedIn app; organisation posting needs the Community Management API product
+    linkedin_client_secret: str = ""
+    linkedin_api_version: str = "202610"  # monthly YYYYMM, ~1 year support; verified 2026-11-17
+    marketing_http_timeout: int = 20
+
     @property
     def cors_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

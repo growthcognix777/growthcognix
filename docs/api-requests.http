@@ -244,3 +244,55 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {"hs_code": "8413", "reporter": "India", "period": "2023", "flow": "M"}
+
+
+# ---------------- Phase 5: marketing ----------------
+### Marketing status (AI, publishing channels, limits)
+GET {{base}}/api/v1/marketing/status
+Authorization: Bearer {{token}}
+
+### Generate a strategy (needs GEMINI_API_KEY or GROQ_API_KEY)
+POST {{base}}/api/v1/clients/{{client_id}}/marketing/strategies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"title": "FY27 plan", "objectives": "More dealer enquiries", "monthly_budget": 100000, "sales_capacity": "2 sales engineers"}
+
+### Budget from the planning template
+POST {{base}}/api/v1/clients/{{client_id}}/marketing/budgets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name": "Q1", "monthly_total": 200000}
+
+### Write a post
+POST {{base}}/api/v1/clients/{{client_id}}/marketing/content
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"kind": "educational", "platform": "linkedin", "title": "Why water quality matters", "body": "Hard water damages food processing lines."}
+
+### Submit, then approve (manager)
+POST {{base}}/api/v1/marketing/content/{{content_id}}/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"action": "submit"}
+
+### Connect a Facebook Page (returns the Meta sign-in URL)
+POST {{base}}/api/v1/clients/{{client_id}}/marketing/accounts/connect
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"platform": "facebook"}
+
+### Publish an approved item (now, or with scheduled_at)
+POST {{base}}/api/v1/marketing/content/{{content_id}}/publish
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"account_id": "{{account_id}}"}
+
+### Analytics: refresh from platforms, then read
+POST {{base}}/api/v1/clients/{{client_id}}/marketing/analytics/refresh
+Authorization: Bearer {{token}}
